@@ -28,14 +28,27 @@ struct OXY
 
 // cây để lưu vị trí các điểm đã bị vật chiếm
 // các điểm có trong cây nếu player chạm phải = die
-class Tree;
 
-class animalLane;
+class Tree
+{
+private:
+    struct node;
+    // DATA
+    node *head;
+    const int MAX = 5;
+
+public:
+    Tree();
+    void insert(OXY point);
+    void remove(OXY point);
+    bool exist(OXY point);
+};
+
+class AnimalLane;
 
 class carLane // nhân
 {
 private:
-    /* data */
 public:
     carLane(Tree &t, int line, int level, int lineNum = 5);
     ~carLane();
@@ -49,31 +62,29 @@ public:
     void run();
 };
 
-class player;
-
-// class này tạo menu
-// menu gồm điểm của ng chơi
-// các nút new game, load game, settings
-// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
-class RoadCrossing // quang
+class player
 {
 private:
     /* data */
+    int x, y;
+    char head, body;
+
 public:
-    RoadCrossing(/* args */);
-    ~RoadCrossing();
+    player(int x = 50, int y = 40, char head = 'O', char body = 'X');
 
-    // chạy game đã hoàn thiện(gồm menu)
-    void run();
+    // hàm điều khiển người chơi
+    // cập nhật vị trí ng chơi
+    char run();
+
+    // cập nhật vị trí người chơi
+    OXY position();
 };
-
-// class chạy game
 class inGame
 {
 private:
     /* data */
 public:
-    inGame(/* args */);
+    inGame();
     ~inGame();
 
     // chạy game với độ khó level
@@ -101,28 +112,19 @@ void gotoxy(int x, int y)
 }
 
 void FixConsoleWindow()
+// class này tạo menu
+// menu gồm điểm của ng chơi
+// các nút new game, load game, settings
+// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
+class RoadCrossing // quang
 {
-    HWND consoleWindow = GetConsoleWindow();
-    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
-    style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
-    SetWindowLong(consoleWindow, GWL_STYLE, style);
-}
+private:
+public:
+    RoadCrossing();
+    ~RoadCrossing();
 
-void SetWindowSize(SHORT width, SHORT height)
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD NewSize;
-    SMALL_RECT WindowSize;
-
-    WindowSize.Top = 0;
-    WindowSize.Left = 0;
-    WindowSize.Bottom = height - 1;
-    WindowSize.Right = width - 1;
-    NewSize.X = width;
-    NewSize.Y = height;
-
-    SetConsoleWindowInfo(hStdout, 1, &WindowSize);
-    SetConsoleScreenBufferSize(hStdout, NewSize);
-}
+    // chạy game đã hoàn thiện(gồm menu)
+    void run();
+};
 
 #endif
