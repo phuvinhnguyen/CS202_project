@@ -21,27 +21,16 @@ struct OXY
     {
         return (b.x == x) && (b.y == y);
     }
+    OXY operator+(OXY b) {
+        return OXY(x+b.x, y+b.y);
+    }
 };
 
 // cây để lưu vị trí các điểm đã bị vật chiếm
 // các điểm có trong cây nếu player chạm phải = die
 class Tree;
 
-class animalLane // hoàng
-{
-private:
-    /* data */
-public:
-    animalLane(Tree &t, int line, int level, int lineNum = 5);
-    ~animalLane();
-
-    // tạo ra 1 lane có động vật chạy qua lại
-    // lane ở dòng thứ line, độ khó là level, lưu data vào t
-    // lane có chiều rộng là lineNum(để mặc định là 5)
-    // hàm được gọi lại nhiều lần, mỗi lần sẽ cập nhật vị trí khác nhau
-    // nên có tầm 3,4 loại động vật-
-    void run();
-};
+class animalLane;
 
 class carLane // nhân
 {
@@ -96,6 +85,11 @@ public:
 };
 
 // CONSOLE FUNCTION CODE
+
+void gotoxy(OXY coord)
+{
+    gotoxy(coord.x, coord.y);
+}
 
 void gotoxy(int x, int y)
 {
