@@ -25,12 +25,25 @@ struct OXY
 
 // cây để lưu vị trí các điểm đã bị vật chiếm
 // các điểm có trong cây nếu player chạm phải = die
-class Tree;
 
+class Tree
+{
+private:
+    struct node;
+    // DATA
+    node *head;
+    const int MAX = 5;
+
+public:
+    Tree();
+    void insert(OXY point);
+    void remove(OXY point);
+    bool exist(OXY point);
+};
+/*
 class animalLane // hoàng
 {
 private:
-    /* data */
 public:
     animalLane(Tree &t, int line, int level, int lineNum = 5);
     ~animalLane();
@@ -46,7 +59,6 @@ public:
 class carLane // nhân
 {
 private:
-    /* data */
 public:
     carLane(Tree &t, int line, int level, int lineNum = 5);
     ~carLane();
@@ -59,32 +71,30 @@ public:
     // nhớ có đèn giao thông
     void run();
 };
-
-class player;
-
-// class này tạo menu
-// menu gồm điểm của ng chơi
-// các nút new game, load game, settings
-// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
-class RoadCrossing // quang
+*/
+class player
 {
 private:
     /* data */
+    int x, y;
+    char head, body;
+
 public:
-    RoadCrossing(/* args */);
-    ~RoadCrossing();
+    player(int x = 50, int y = 40, char head = 'O', char body = 'X');
 
-    // chạy game đã hoàn thiện(gồm menu)
-    void run();
+    // hàm điều khiển người chơi
+    // cập nhật vị trí ng chơi
+    char run();
+
+    // cập nhật vị trí người chơi
+    OXY position();
 };
-
-// class chạy game
 class inGame
 {
 private:
     /* data */
 public:
-    inGame(/* args */);
+    inGame();
     ~inGame();
 
     // chạy game với độ khó level
@@ -92,8 +102,34 @@ public:
     // q để quit game
     // trả về điểm của ng chơi-
     // tự chọn âm thanh, hiệu ứng
-    int loadGame(int level, string filePath = "", bool music = 0);
+    int loadGame(int level, string filePath = "", bool music = 0)
+    {
+        player plr;
+        while (1)
+        {
+            char input = plr.run();
+            if (input == 'q')
+                break;
+        }
+        return 1;
+    }
 };
+/*
+// class này tạo menu
+// menu gồm điểm của ng chơi
+// các nút new game, load game, settings
+// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
+class RoadCrossing // quang
+{
+private:
+public:
+    RoadCrossing();
+    ~RoadCrossing();
+
+    // chạy game đã hoàn thiện(gồm menu)
+    void run();
+};
+*/
 
 // CONSOLE FUNCTION CODE
 
