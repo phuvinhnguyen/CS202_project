@@ -40,7 +40,7 @@ public:
     void remove(OXY point);
     bool exist(OXY point);
 };
-/*
+
 class animalLane // hoàng
 {
 private:
@@ -71,7 +71,7 @@ public:
     // nhớ có đèn giao thông
     void run();
 };
-*/
+
 class player
 {
 private:
@@ -102,19 +102,9 @@ public:
     // q để quit game
     // trả về điểm của ng chơi-
     // tự chọn âm thanh, hiệu ứng
-    int loadGame(int level, string filePath = "", bool music = 0)
-    {
-        player plr;
-        while (1)
-        {
-            char input = plr.run();
-            if (input == 'q')
-                break;
-        }
-        return 1;
-    }
+    int loadGame(int level, string filePath = "", bool music = 0);
 };
-/*
+
 // class này tạo menu
 // menu gồm điểm của ng chơi
 // các nút new game, load game, settings
@@ -129,42 +119,5 @@ public:
     // chạy game đã hoàn thiện(gồm menu)
     void run();
 };
-*/
-
-// CONSOLE FUNCTION CODE
-
-void gotoxy(int x, int y)
-{
-    static HANDLE h = nullptr;
-    if (!h)
-        h = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD c = {x, y};
-    SetConsoleCursorPosition(h, c);
-}
-
-void FixConsoleWindow()
-{
-    HWND consoleWindow = GetConsoleWindow();
-    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
-    style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
-    SetWindowLong(consoleWindow, GWL_STYLE, style);
-}
-
-void SetWindowSize(SHORT width, SHORT height)
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD NewSize;
-    SMALL_RECT WindowSize;
-
-    WindowSize.Top = 0;
-    WindowSize.Left = 0;
-    WindowSize.Bottom = height - 1;
-    WindowSize.Right = width - 1;
-    NewSize.X = width;
-    NewSize.Y = height;
-
-    SetConsoleWindowInfo(hStdout, 1, &WindowSize);
-    SetConsoleScreenBufferSize(hStdout, NewSize);
-}
 
 #endif
