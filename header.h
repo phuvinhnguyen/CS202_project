@@ -190,7 +190,7 @@ private:
     list<T> obstacles;
     bool goRight;
 
-    void spawnObstacle(int level);
+    bool spawnObstacle(int level);
     void resetCooldown();
     void changeLight();
 
@@ -257,6 +257,7 @@ private:
     bool loadMenu(int x, int y);
     bool saveMenu(int x, int y);
     bool instructionMenu(int x, int y);
+    bool difficultyMenu(int x, int y);
     int menu(int x, int y, vector<string> &options, string menu_name);
 
     bool settingsMenu(int x, int y);
@@ -315,8 +316,7 @@ void SimpleLane<T>::run(int level)
     }
     if (cooldown <= 0 && (!light || (light && !light->isRed())))
     {
-        spawnObstacle(level);
-        resetCooldown();
+        if (spawnObstacle(level)) resetCooldown();
     }
     else
         --cooldown;
@@ -368,9 +368,20 @@ void SimpleLane<T>::resumeLane(bool lastLane)
 }
 
 template <class T>
-void SimpleLane<T>::spawnObstacle(int level)
+bool SimpleLane<T>::spawnObstacle(int level)
 {
-    obstacles.push_back(T(anchor, level, goRight, laneWidth));
+    T obstacle(anchor, level, goRight, laneWidth);
+    if (obstacles.empty()) {
+        obstacles.push_back(obstacle);
+        return true;
+    }
+    else {
+        Character* thisObstacle = &obstacle;
+        Character* thatObstacle = &obstacles.back();
+        if (thisObstacle->checkCollision(thatObstacle)) return false;
+        obstacles.push_back(obstacle);
+        return true;
+    }
 }
 template <class T>
 bool SimpleLane<T>::checkCollision(Player &player)

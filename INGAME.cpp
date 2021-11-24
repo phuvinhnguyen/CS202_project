@@ -95,22 +95,24 @@ void InGame::gameplay()
         system("cls");
         maxlevel = max(maxlevel, level);
         game = new JurassicRoad(level, difficulty, this);
+        gotoxy(40, 2);
+        cout << "LEVEL: " << level;
+        gotoxy(40, 3);
+        cout << "DIFFICULTY: " << difficulty;
         int wtf = game->run();
-        if (wtf == 1)
-        {
-            if (level == 5)
-            {
+        if (wtf == 1) { 
+            if (level == 5) {
                 maxlevel = 6;
                 break;
             }
-            else
-                ++level;
+            else ++level;
+            maxlevel = max(maxlevel, level);
             if (!Win()) return;
         }
         else if (wtf == 0)
         {
             fflush(stdin);
-            if (!Dead()) return;
+            if (level != 6) if (!Dead()) return;
         }
         else
         {
@@ -132,6 +134,7 @@ void InGame::CantLoadFile(int x, int y)
     while (!_kbhit())
     {
     }
+    char a = _getch();
 }
 
 void InGame::saveFile(int x, int y)
@@ -222,25 +225,38 @@ void InGame::gameTitle(int x, int y)
 
 bool InGame::gameMenu(int x, int y)
 {
-    while (1)
+    vector<string> options;
+    for (int i = 1; i <= 5; ++i)
     {
-        vector<string> options;
-        for (int i = 1; i <= 5; ++i)
-        {
-            string name = "Level ";
-            options.push_back(name + to_string(i) + (i <= maxlevel ? " : UNLOCKED" : " : LOCKED"));
-        }
-        options.push_back(string("Level Endless") + (maxlevel >= 6 ? " : UNLOCKED" : " : LOCKED"));
-        options.push_back("Return");
-
-        int choice = menu(x, y, options, "CHOOSE LEVEL");
-        if (choice == 6)
-            return false;
-        if (choice + 1 > maxlevel)
-            return true;
-        level = choice + 1;
-        gameplay();
+        string name = "Level ";
+        options.push_back(name + to_string(i) + (i <= maxlevel ? " : UNLOCKED" : " : LOCKED"));
     }
+    options.push_back(string("Level Endless") + (maxlevel >= 6 ? " : UNLOCKED" : " : LOCKED"));
+    options.push_back("Return");
+
+    int choice = menu(x, y, options, "CHOOSE LEVEL");
+    if (choice == 6)
+        return false;
+    if (choice + 1 > maxlevel)
+        return true;
+    level = choice + 1;
+    gameplay();
+    return false;
+}
+
+bool InGame::difficultyMenu(int x, int y) {
+    vector<string> options;
+    options.push_back("Difficulty 1");
+    options.push_back("Difficulty 2");
+    options.push_back("Difficulty 3");
+    options.push_back("Difficulty 4");
+    options.push_back("Difficulty 5");
+    options.push_back("Return");
+    int choice = menu(x, y, options, "PAUSE");
+    if (choice != 6) {
+        difficulty = choice + 1;
+    }
+    return false;
 }
 
 bool InGame::saveMenu(int x, int y)
@@ -284,17 +300,21 @@ bool InGame::startMenu(int x, int y)
     options.push_back("Load Game");
     options.push_back("Exit");
     int choice = menu(x, y, options, "START");
+    bool first = true;
     while (true)
     {
         switch (choice)
         {
         case 0:
-            hasSound = 1;
-            maxlevel = 1;
-            level = 1;
-            score = 0; 
-            game = nullptr;
-            difficulty = 3;
+            if (first) {
+                hasSound = 1;
+                maxlevel = 1;
+                level = 1;
+                score = 0;
+                game = nullptr;
+                difficulty = 3;
+                first = false;
+            }
             if (playMenu(x, y))
                 continue;
             return true;
@@ -312,13 +332,35 @@ bool InGame::instructionMenu(int x, int y) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console_color, 15);
     system("cls");
-    gameTitle(35, 2);
-    gotoxy(x - 15, y - 1);
-    cout << "------------------------------------------";
+    gameTitle(15, 3);
+    gotoxy(x - 35, y - 1);
+    cout << "------------------------------------------------------------------------------------------------";
+    for (int i = 0; i <= 12; ++i) {
+        gotoxy(x - 35, y + i); cout << "|";
+        gotoxy(x + 60, y + i); cout << "|";
+    }
+    gotoxy(x - 35, y + 12);
+    cout << "------------------------------------------------------------------------------------------------";
     gotoxy(x, y - 1);
     cout << "Instruction";
-
-    while (!_kbhit());
+    gotoxy(x - 30, y);
+    cout << "Welcome to JurrasicRoad, a simple road-crossing game";
+    gotoxy(x - 30, y + 1);
+    cout << "In JurrasicRoad, there weren't any meteorites hitting the Earth 145 million years ago.";
+    gotoxy(x - 30, y + 2);
+    cout << "Therefore, human and dinosaurs continue to co-exist to present day.";
+    gotoxy(x - 30, y + 3);
+    cout << "You are a loner stuck in the middle of no where and the only way to get back home";
+    gotoxy(x - 30, y + 4);
+    cout << "is to cross a bunch of streets filled with cars and dinosaurs.";
+    gotoxy(x - 30, y + 6);
+    cout << "        W";
+    gotoxy(x - 30, y + 7);
+    cout << "Press A S D to move the character.";
+    gotoxy(x - 30, y + 9);
+    cout << "Press P to pause the game.";
+    gotoxy(x - 30, y + 11);
+    system("pause");
     return false;
 }
 
@@ -372,24 +414,27 @@ bool InGame::settingsMenu(int x, int y)
     options.push_back("Difficulty");
     options.push_back("Return");
     int choice = menu(x, y, options, "SETTINGS");
-    switch (choice)
-    {
-    case 0:
-        if (!hasSound) {
-            hasSound = 1;
-            PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+    while (true) {
+        switch (choice)
+        {
+        case 0:
+            if (!hasSound) {
+                hasSound = 1;
+                PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+            }
+            return true;
+        case 1:
+            if (hasSound) {
+                hasSound = 0;
+                PlaySound(NULL, 0, 0);
+            }
+            return true;
+        case 2:
+            if (difficultyMenu(x, y)) continue;
+            return true;
+        case 3:
+            return false;
         }
-        return true;
-    case 1:
-        if (hasSound) {
-            hasSound = 0;
-            PlaySound(NULL, 0, 0);
-        }
-        return true;
-    case 2:
-        return true;
-    case 3:
-        return false;
     }
 }
 
@@ -409,7 +454,7 @@ int InGame::menu(int x, int y, vector<string>& options, string menu_name)
     gotoxy(x - 2, y);
     cout << ">";
 
-    gameTitle(35, 2);
+    gameTitle(15, 3);
     gotoxy(x - 15, y - 1);
     cout << "------------------------------------------";
     gotoxy(x, y - 1);
