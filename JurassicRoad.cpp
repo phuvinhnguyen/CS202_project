@@ -89,14 +89,17 @@ JurassicRoad::~JurassicRoad() {
 
 int JurassicRoad::run() {
 	HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
-	int cooldown = 20000;
+	int cooldown = 10000;
 	if (level == 6) cooldown = 0;
 	int DIFFICULTY = difficulty;
 	int idontknowwhatthisdoes = 1000000;
 	bool first = true;
 	SetConsoleTextAttribute(console_color, 15);
+	int score = 0;
 	player.draw();
+	auto BEG = chrono::steady_clock::now();
 	while (true) {
+		score += DIFFICULTY * 100;
 		auto st = chrono::steady_clock::now();
 		for (auto& lane : lanes) {
 			lane->run(DIFFICULTY);
@@ -108,7 +111,7 @@ int JurassicRoad::run() {
 			}
 			else --idontknowwhatthisdoes;
 		}
-		if (cooldown == 20000) {
+		if (cooldown == 10000) {
 			gotoxy(player.getAnchor().x-5, player.getAnchor().y - 1);
 			SetConsoleTextAttribute(console_color, 15);
 			cout << "                                ";
@@ -116,7 +119,7 @@ int JurassicRoad::run() {
 			cout << WHITE << "READY";
 			--cooldown;
 		}
-		else if (cooldown == 10000) {
+		else if (cooldown == 5000) {
 			gotoxy(player.getAnchor().x-5, player.getAnchor().y - 1);
 			SetConsoleTextAttribute(console_color, 15);
 			cout << "                                ";
@@ -150,9 +153,32 @@ int JurassicRoad::run() {
 		else --cooldown;
 		while (true) {
 			long long duration = chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - st).count();
-			if (duration > 100000 || duration < 0) break;
+			if (duration > 150000 || duration < 0) break;
 		}
 		if (checkDeath()) {
+			if (level == 6) {
+				auto ED = chrono::steady_clock::now();
+				long long duration = chrono::duration_cast<chrono::seconds>(ED - BEG).count();
+				SetConsoleTextAttribute(console_color, 15);
+				system("cls");
+				gotoxy(50, 20);
+				cout << "-------------------" << "--------------------------";
+				gotoxy(50, 21);
+				cout << "|   YOU DIED       " << "                         |";
+				gotoxy(50, 22);
+				cout << "|   SURVIVAL TIME: " << duration << "s            |";
+				gotoxy(50, 23);
+				cout << "|   YOUR SCORE:    " << score << " points         |";
+				gotoxy(50, 24);
+				cout << "-------------------" << "--------------------------";
+				while (_kbhit()) {
+					char a = _getch();
+				}
+				while (!_kbhit()) {
+
+				}
+				char a = _getch();
+			}
 			return 0;
 		}
 		else if (level != 6 && checkWin()) {
@@ -187,4 +213,8 @@ void JurassicRoad::resume() {
 		(*itr)->resumeLane(tmp == lanes.end());
 	}
 	player.draw();
+	gotoxy(40, 2);
+	cout << "LEVEL: " << level;
+	gotoxy(40, 3);
+	cout << "DIFFICULTY: " << difficulty;
 }
