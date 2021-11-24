@@ -82,15 +82,17 @@ class inGame
 {
 private:
     int32_t score, level_;
-    vector<bool> land_;
-    void saveFile();
+    vector<char> land_;
+    void saveFile(int x = 0, int y = 0);
+    bool loadFile(string dir);
     void Dead(int x = 0, int y = 0);
     void Win(int x = 0, int y = 0);
     void Score(int num, int x = 0, int y = 0);
+    void newData();
 public:
     inGame();
     ~inGame();
-    int loadGame(int level, string filePath = "", bool music = 0);
+    void loadGame(int level, string filePath = "", bool music = 0);
 };
 
 // CONSOLE FUNCTION CODE
