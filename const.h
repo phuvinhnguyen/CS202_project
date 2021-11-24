@@ -16,6 +16,8 @@
 // For Animal
 #define DEFAULT_SPAWN_SPEED 60
 #define DEFAULT_MOVE_SPEED 60
+const LPCTSTR win_sound = TEXT("win.wav");
+const LPCTSTR lose_sound = TEXT("lose.wav");
 #define LEVEL_SPAWN_SPEED 5
 #define LEVEL_MOVE_SPEED 5
 #define PIGEON_SOUND_FILE ""
