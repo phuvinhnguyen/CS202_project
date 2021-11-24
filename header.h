@@ -22,9 +22,10 @@ class Pixel
 public:
     OXY coord;
     char c;
-    const char *color;
+    string color;
 
     Pixel(OXY _coord, char _c, const char *_color);
+    Pixel(OXY _coord, char _c, string _color);
     Pixel operator+(OXY &other);
     friend ostream &operator<<(ostream &os, const Pixel &pixel);
 };
@@ -241,8 +242,7 @@ public:
     void resume();
 };
 
-class InGame
-{
+class InGame {
 private:
     string username;
     int32_t score, maxlevel, level, difficulty;
@@ -265,7 +265,7 @@ private:
     void readTitle(string dir, int x, int y);
     string linkBoard(int x, int y);
     void saveFile(int x = 5, int y = 15);
-    void loadGame(string filePath = "", bool music = 0);
+    bool loadGame(string filePath = "", bool music = 0);
     void CantLoadFile(int x = 0, int y = 0);
 
     bool Dead(int x = 0, int y = 0);
@@ -276,7 +276,7 @@ public:
     InGame();
     ~InGame();
     void run();
-    void gameplay();
+    void gameplay(int x, int y);
 
     int pauseMenu(int x, int y);
 };

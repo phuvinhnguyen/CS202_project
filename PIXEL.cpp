@@ -6,6 +6,10 @@ Pixel::Pixel(OXY _coord, char _c, const char* _color) : coord(_coord), c(_c), co
 
 }
 
+Pixel::Pixel(OXY _coord, char _c, string _color) : coord(_coord), c(_c), color(_color) {
+
+}
+
 Pixel Pixel::operator+(OXY& other) {
 	return Pixel(coord + other, c, color);
 }
