@@ -1,50 +1,18 @@
 #include "Header.h"
 
-bool InGame::Dead(int x, int y)
-{
-    gotoxy(x, y);
-    cout << "--------------------------";
-    gotoxy(x, y + 1);
-    cout << "|      YOU ARE DEAD      |";
-    gotoxy(x, y + 2);
-    cout << "|q: quit    |c: continue |";
-    gotoxy(x, y + 3);
-    cout << "--------------------------";
-    int cooldown = 10000;
-    while (cooldown > 0)
-        --cooldown;
-    while (1)
-    {
-        if (_kbhit())
-        {
-            char a = _getch();
-            if (a == 'q') return 0;
-            else if (a == 'c') return 1;
-        }
-    }
+bool InGame::Dead(int x, int y) {
+    vector<string> options;
+    options.push_back("Try again");
+    options.push_back("Quit to menu");
+    int choice = menu(x, y, options, "Game Over");
+    return !choice;
 }
-bool InGame::Win(int x, int y)
-{
-    gotoxy(x, y);
-    cout << "---------------------------";
-    gotoxy(x, y + 1);
-    cout << "|         YOU WIN         |";
-    gotoxy(x, y + 2);
-    cout << "|q: quit     |c: continue |";
-    gotoxy(x, y + 3);
-    cout << "---------------------------";
-    int cooldown = 10000;
-    while (cooldown > 0)
-        --cooldown;
-    while (1)
-    {
-        if (_kbhit())
-        {
-            char a = _getch();
-            if (a == 'q') return 0;
-            else if (a == 'c') return 1;
-        }
-    }
+bool InGame::Win(int x, int y) {
+    vector<string> options;
+    options.push_back("Continue");
+    options.push_back("Quit to menu");
+    int choice = menu(x, y, options, "Level Complete");
+    return !choice;
 }
 void InGame::Score(int num, int x, int y)
 {
@@ -61,12 +29,14 @@ InGame::InGame() : hasSound(1), maxlevel(1), level(1), score(0), game(nullptr), 
 
 InGame::~InGame() {}
 
-void InGame::loadGame(string filePath, bool music)
+bool InGame::loadGame(string filePath, bool music)
 {
     ifstream ifs(filePath, ios::binary);
     if (!ifs.good())
     {
-        CantLoadFile(60,20);
+        CantLoadFile(30,20);
+        ifs.close();
+        return false;
     }
     else
     {
@@ -74,20 +44,13 @@ void InGame::loadGame(string filePath, bool music)
         ifs.read((char *)&level, 4);
         ifs.read((char *)&difficulty, 4);
         ifs.read((char *)&maxlevel, 4);
-        int32_t nameLength;
-        ifs.read((char *)&nameLength, 4);
-        for (int i = 0; i < nameLength; i++)
-        {
-            char x;
-            ifs.read((char *)&x, 1);
-            username.push_back(x);
-        }
+        ifs.close();
+        return true;
     }
     ifs.close();
 }
 
-void InGame::gameplay()
-{
+void InGame::gameplay(int x, int y) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
     while (level <= 6)
     {
@@ -101,18 +64,32 @@ void InGame::gameplay()
         cout << "DIFFICULTY: " << difficulty;
         int wtf = game->run();
         if (wtf == 1) { 
+            if (hasSound) {
+                if (level == 5) PlaySound(L"win.wav", NULL, SND_FILENAME);
+                else PlaySound(L"level_complete.wav", NULL, SND_FILENAME);
+                while (_kbhit()) char a = _getch();
+                while (!_kbhit());
+                char a = _getch();
+                PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+            }
             if (level == 5) {
                 maxlevel = 6;
                 break;
             }
             else ++level;
             maxlevel = max(maxlevel, level);
-            if (!Win()) return;
+            if (!Win(x, y)) return;
         }
         else if (wtf == 0)
         {
             fflush(stdin);
-            if (level != 6) if (!Dead()) return;
+            if (level != 6) {
+                if (hasSound) {
+                    PlaySound(L"game_over.wav", NULL, SND_FILENAME);
+                    PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+                }
+                if (!Dead(x, y)) return;
+            }
         }
         else
         {
@@ -121,7 +98,6 @@ void InGame::gameplay()
         }
         delete game;
     }
-    Win();
 }
 void InGame::CantLoadFile(int x, int y)
 {
@@ -142,16 +118,15 @@ void InGame::saveFile(int x, int y)
     while (1)
     {
         gotoxy(x, y);
-        cout << "-----------------------------------------------------------------------------";
+        cout << "----------------------------------------------------------------";
         gotoxy(x, y + 1);
-        cout << "                                 input directory                             ";
+        cout << "                        input directory                         ";
         gotoxy(x, y + 2);
-        cout << "-----------------------------------------------------------------------------";
+        cout << "----------------------------------------------------------------";
         gotoxy(x, y + 3);
-        cout << "|dir:                                                                        ";
+        cout << "|dir: ";
         gotoxy(x, y + 4);
-        cout << "-----------------------------------------------------------------------------";
-
+        cout << "----------------------------------------------------------------";
         gotoxy(x + 7, y + 3);
         string dir;
         cin >> dir;
@@ -168,13 +143,6 @@ void InGame::saveFile(int x, int y)
             ofs.write((char *)&level, 4);
             ofs.write((char *)&difficulty, 4);
             ofs.write((char *)&maxlevel, 4);
-            int32_t nameLength = username.length();
-            ofs.write((char *)&nameLength, 4);
-            for (int i = 0; i < nameLength; i++)
-            {
-                char x = username[i];
-                ofs.write((char *)&x, 1);
-            }
         }
         ofs.close();
         gotoxy(x, y+5);
@@ -248,7 +216,7 @@ bool InGame::gameMenu(int x, int y)
     if (choice + 1 > maxlevel)
         return true;
     level = choice + 1;
-    gameplay();
+    gameplay(x, y);
     return false;
 }
 
@@ -270,7 +238,7 @@ bool InGame::difficultyMenu(int x, int y) {
 bool InGame::saveMenu(int x, int y)
 {
     system("cls");
-    saveFile(x, y);
+    saveFile(15, 12);
     return false;
 }
 
@@ -328,8 +296,11 @@ bool InGame::startMenu(int x, int y)
                 continue;
             return true;
         case 1:
-            if (loadMenu(x, y))
+            if (loadMenu(x, y)) {
+                choice = 0;
+                first = false;
                 continue;
+            }
             return true;
         case 2:
             return false;
@@ -344,11 +315,11 @@ bool InGame::instructionMenu(int x, int y) {
     gameTitle(15, 3);
     gotoxy(x - 35, y - 1);
     cout << "------------------------------------------------------------------------------------------------";
-    for (int i = 0; i <= 12; ++i) {
+    for (int i = 0; i <= 13; ++i) {
         gotoxy(x - 35, y + i); cout << "|";
         gotoxy(x + 60, y + i); cout << "|";
     }
-    gotoxy(x - 35, y + 12);
+    gotoxy(x - 35, y + 13);
     cout << "------------------------------------------------------------------------------------------------";
     gotoxy(x, y - 1);
     cout << "Instruction";
@@ -362,13 +333,15 @@ bool InGame::instructionMenu(int x, int y) {
     cout << "You are a loner stuck in the middle of no where and the only way to get back home";
     gotoxy(x - 30, y + 4);
     cout << "is to cross a bunch of streets filled with cars and dinosaurs.";
-    gotoxy(x - 30, y + 6);
-    cout << "        W";
+    gotoxy(x - 30, y + 5);
+    cout << "Your objective is to cross all the roads safely, i.e. not getting hit by anything.";
     gotoxy(x - 30, y + 7);
+    cout << "        W";
+    gotoxy(x - 30, y + 8);
     cout << "Press A S D to move the character.";
-    gotoxy(x - 30, y + 9);
+    gotoxy(x - 30, y + 10);
     cout << "Press P to pause the game.";
-    gotoxy(x - 30, y + 11);
+    gotoxy(x - 30, y + 12);
     system("pause");
     return false;
 }
@@ -411,9 +384,7 @@ bool InGame::playMenu(int x, int y)
 bool InGame::loadMenu(int x, int y)
 {
     system("cls");
-    loadGame(readDirectory(60, 12), hasSound);
-    playMenu(x, y);
-    return false;
+    return loadGame(readDirectory(10, 12), hasSound);
 }
 
 bool InGame::settingsMenu(int x, int y)
@@ -448,11 +419,13 @@ bool InGame::settingsMenu(int x, int y)
     }
 }
 
-int InGame::menu(int x, int y, vector<string>& options, string menu_name) 
-{
+int InGame::menu(int x, int y, vector<string>& options, string menu_name) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console_color, 15);
     system("cls");
+    while (_kbhit()) {
+        char a = _getch();
+    }
     int choose_num = options.size(), choose = 0;
 
     for (int i = 0; i < choose_num; ++i)
