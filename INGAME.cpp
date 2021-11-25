@@ -276,6 +276,7 @@ bool InGame::gameMenu(int x, int y)
     return false;
 }
 
+
 bool InGame::difficultyMenu(int x, int y) {
     vector<string> options;
     options.push_back("Difficulty 1");
