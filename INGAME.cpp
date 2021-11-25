@@ -291,7 +291,7 @@ bool InGame::difficultyMenu(int x, int y) {
     return false;
 }
 
-bool InGame::saveMenu(int x, int y)
+bool InGame::saveMenu (int x, int y)
 {
     system("cls");
     saveFile(20, 12);
