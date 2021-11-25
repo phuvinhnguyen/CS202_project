@@ -404,7 +404,7 @@ bool InGame::instructionMenu(int x, int y) {
     return false;
 }
 
-bool InGame::playMenu(int x, int y)
+bool InGame::playMenu (int x, int y)
 {
     vector<string> options;
     options.push_back("Play");
