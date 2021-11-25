@@ -66,7 +66,7 @@ void InGame::loadGame(string filePath, bool music)
     ifstream ifs(filePath, ios::binary);
     if (!ifs.good())
     {
-        CantLoadFile();
+        CantLoadFile(60,20);
     }
     else
     {
@@ -144,18 +144,22 @@ void InGame::saveFile(int x, int y)
         gotoxy(x, y);
         cout << "-----------------------------------------------------------------------------";
         gotoxy(x, y + 1);
-        cout << "|dir:                                                                        ";
+        cout << "                                 input directory                             ";
         gotoxy(x, y + 2);
         cout << "-----------------------------------------------------------------------------";
+        gotoxy(x, y + 3);
+        cout << "|dir:                                                                        ";
+        gotoxy(x, y + 4);
+        cout << "-----------------------------------------------------------------------------";
 
-        gotoxy(x + 7, y + 1);
+        gotoxy(x + 7, y + 3);
         string dir;
         cin >> dir;
 
         ofstream ofs(dir, ios::binary);
         if (!ofs.good())
         {
-            gotoxy(15, 4);
+            gotoxy(x, y + 4);
             cout << "|     file cannot open      |";
         }
         else
@@ -173,7 +177,7 @@ void InGame::saveFile(int x, int y)
             }
         }
         ofs.close();
-        gotoxy(1, 5);
+        gotoxy(x, y+5);
         cout << "re-save file? y/n: ";
         char a;
         cin >> a;
@@ -210,10 +214,14 @@ string readDirectory(int x, int y) {
     gotoxy(x, y);
     cout << "----------------------------------------------------------------";
     gotoxy(x, y + 1);
-    cout << "|dir: ";
+    cout << "                        input directory                         ";
     gotoxy(x, y + 2);
     cout << "----------------------------------------------------------------";
-    gotoxy(x + 7, y + 1);
+    gotoxy(x, y + 3);
+    cout << "|dir: ";
+    gotoxy(x, y + 4);
+    cout << "----------------------------------------------------------------";
+    gotoxy(x + 7, y + 3);
     string n;
     cin >> n;
     return n;
@@ -261,6 +269,7 @@ bool InGame::difficultyMenu(int x, int y) {
 
 bool InGame::saveMenu(int x, int y)
 {
+    system("cls");
     saveFile(x, y);
     return false;
 }
@@ -401,6 +410,7 @@ bool InGame::playMenu(int x, int y)
 
 bool InGame::loadMenu(int x, int y)
 {
+    system("cls");
     loadGame(readDirectory(60, 12), hasSound);
     playMenu(x, y);
     return false;
