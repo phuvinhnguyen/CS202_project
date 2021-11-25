@@ -233,7 +233,7 @@ void InGame::readTitle(string dir, int x, int y)
     }
     ifs.close();
 }
-string readDirectory(int x, int y) {
+string readDirectory(int x, int y)  {
     gotoxy(x, y);
     cout << "----------------------------------------------------------------";
     gotoxy(x, y + 1);
