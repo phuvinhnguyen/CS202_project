@@ -17,9 +17,9 @@ vector < Pixel > g_CarPixel_l;
 vector < Pixel > g_CeratosaurusPixel_l;
 
 Pixel blankPixel(OXY(0, 0), ' ', WHITE);
-
+ 
 extern int background[ConsoleWidth][ConsoleHeight];
-
+ 
 void loadCharacters() {
 	loadTexture("player.txt", &g_PlayerPixel, WHITE);
 
@@ -37,7 +37,7 @@ void loadCharacters() {
 	loadTexture("pterodactyl_l.txt", &g_PterodactylPixel_l, GREEN);
 	loadTexture("plane_l.txt", &g_PlanePixel_l, RED);
 }
-
+ 
 void loadTexture(const char* path, vector < Pixel >* g_pixels, const char* color) {
 	memset(background, 0, sizeof(background));
 	ifstream ifs(path);
@@ -55,7 +55,7 @@ void loadTexture(const char* path, vector < Pixel >* g_pixels, const char* color
 	}
 	ifs.close();
 }
-
+ 
 Character::Character(OXY _anchor, vector < Pixel >* _pixels, int _defCooldown)
 	: anchor(_anchor), pixels(_pixels), defCooldown(_defCooldown), cooldown(0) { }
 Character::~Character() { }
