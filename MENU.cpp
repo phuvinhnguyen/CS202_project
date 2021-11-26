@@ -2,7 +2,7 @@
 #include "MENU.h"
 using namespace std;
 
-
+   
 const int choose_num = 4;
 
 void menu::gameTitle(int x, int y) {
