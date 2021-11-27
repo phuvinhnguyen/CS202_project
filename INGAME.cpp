@@ -445,7 +445,7 @@ bool InGame::loadMenu (int x, int y)
     return loadGame(readDirectory(20, 12), hasSound);
 }
 
-bool InGame::settingsMenu(int x, int y)
+bool InGame::settingsMenu (int x, int y)
 {
     vector<string> options;
     options.push_back("Sound on");
