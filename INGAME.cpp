@@ -439,7 +439,7 @@ bool InGame::playMenu (int x, int y)
     }
 }
 
-bool InGame::loadMenu(int x, int y)
+bool InGame::loadMenu (int x, int y)
 {
     system("cls");
     return loadGame(readDirectory(20, 12), hasSound);
