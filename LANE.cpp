@@ -13,7 +13,7 @@ Lane::Lane(OXY _anchor, int _laneWidth, int _defCooldown, bool hasLight, bool la
 Lane::~Lane() { }
 void Lane::drawLane(bool lastLane) {
 	HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
-	gotoxy(anchor);
+	gotoxy(anchor);                                       
 	for (int i = 0; i < ScreenWidth; ++i) {
 		if (background[anchor.x + i][anchor.y]) break;
 		SetConsoleTextAttribute(console_color, 42);
