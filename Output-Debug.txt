@@ -1,0 +1,23 @@
+﻿'JurassicRoad.exe' (Win32): Loaded 'D:\CS202\Project\JurassicRoad\x64\Debug\JurassicRoad.exe'. Symbols loaded.
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\ntdll.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\kernel32.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\KernelBase.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\user32.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\win32u.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\gdi32.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\gdi32full.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\msvcp_win.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbase.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\msvcp140d.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140d.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140_1d.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbased.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\imm32.dll'. 
+The thread 0x3180 has exited with code 0 (0x0).
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\sechost.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\rpcrt4.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\kernel.appcore.dll'. 
+'JurassicRoad.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. 
+The thread 0x368c has exited with code 0 (0x0).
+The thread 0x3a24 has exited with code 0 (0x0).
+The program '[16100] JurassicRoad.exe' has exited with code 0 (0x0).
