@@ -1,130 +1,397 @@
-#ifndef HEADER
-#define HEADER
+#ifndef _HEADER_H_
+#define _HEADER_H_
 
-#include "const.h"
-using namespace std;
+#include "Library.h"
 
-// FUNCTION ALL CONSOLE FUNCTION
+class OXY
+{
+private:
+public:
+    int x, y;
+
+    OXY(int x, int y);
+    OXY(pair<int, int> A);
+
+    bool invalid() const;
+    bool operator==(OXY b);
+    OXY operator+(OXY b);
+};
+
+class Pixel
+{
+public:
+    OXY coord;
+    char c;
+    const char *color;
+
+    Pixel(OXY _coord, char _c, const char *_color);
+    Pixel operator+(OXY &other);
+    friend ostream &operator<<(ostream &os, const Pixel &pixel);
+};
+
+class TrafficLight
+{
+private:
+    OXY anchor;
+    int state; // 0 green, 1 yellow, 2 red
+    int cooldown;
+    const int defCooldown;
+
+    void resetCooldown();
+    void switchLight();
+    void draw();
+
+public:
+    TrafficLight(OXY _anchor);
+    ~TrafficLight();
+    bool isRed();
+    void run();
+};
+
+class Character
+{
+protected:
+    OXY anchor;
+    vector<Pixel> *pixels;
+    int cooldown;
+    const int defCooldown;
+
+    void resetCooldown();
+
+public:
+    Character(OXY _anchor, vector<Pixel> *_pixels, int _defCooldown);
+    virtual ~Character();
+    bool checkCollision(Character *other);
+
+    OXY getAnchor();
+};
+
+class Player : public Character
+{
+private:
+    OXY prevAnchor;
+
+public:
+    Player(OXY _anchor);
+    ~Player();
+    vector<Pixel> *getPixels();
+    bool run();
+    void draw();
+    void erase(bool curPos);
+    void setDefPos(OXY _anchor);
+};
+
+class Obstacle : public Character
+{
+protected:
+    bool isMoving;
+    bool goRight;
+    const int power;
+
+public:
+    Obstacle(OXY _anchor, vector<Pixel> *_pixels, int _power, int _defCooldown, bool _goRight);
+    virtual ~Obstacle();
+
+    virtual void setMove(bool move);
+    virtual void speak() = 0;
+
+    int getPower();
+    bool isOffScreen();
+    bool move();
+    void draw();
+    void erase(bool curPos);
+};
+
+class Pigeon : public Obstacle
+{
+private:
+public:
+    Pigeon(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Pigeon();
+
+    void speak();
+};
+
+class Pterodactyl : public Obstacle
+{
+private:
+public:
+    Pterodactyl(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Pterodactyl();
+
+    void speak();
+};
+
+class Plane : public Obstacle
+{
+private:
+public:
+    Plane(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Plane();
+
+    void speak();
+};
+
+class Cougar : public Obstacle
+{
+private:
+public:
+    Cougar(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Cougar();
+
+    void speak();
+};
+
+class Car : public Obstacle
+{
+private:
+public:
+    Car(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Car();
+
+    void speak();
+    void setMove(bool move);
+};
+
+class Ceratosaurus : public Obstacle
+{
+private:
+public:
+    Ceratosaurus(OXY _anchor, int level, bool _goRight, int laneWidth);
+    ~Ceratosaurus();
+
+    void speak();
+};
+
+class Lane
+{
+protected:
+    OXY anchor;
+    int laneWidth;
+    int cooldown;
+    const int defCooldown;
+    TrafficLight *light;
+
+    void drawLane(bool lastLane);
+
+public:
+    Lane(OXY _anchor, int _laneWidth, int _defCooldown, bool hasLight, bool lastLane);
+
+    virtual ~Lane();
+    virtual void run(int level) = 0;
+    virtual bool checkCollision(Player &player) = 0;
+    virtual void resumeLane(bool lastLane) = 0;
+};
+
+template <class T>
+class SimpleLane : public Lane
+{
+private:
+    list<T> obstacles;
+    bool goRight;
+
+    void spawnObstacle(int level);
+    void resetCooldown();
+    void changeLight();
+
+public:
+    SimpleLane(OXY _anchor, int _laneWidth, int level, bool hasLight, bool lastLane);
+    ~SimpleLane();
+
+    void run(int level);
+    bool checkCollision(Player &player);
+    void resumeLane(bool lastLane);
+};
+
+class ChaoticLane : public Lane
+{
+private:
+    list<Obstacle *> obstacles;
+
+    void spawnObstacle(int level, bool &plane);
+    void resetCooldown();
+    void changeLight();
+
+public:
+    ChaoticLane(OXY _anchor, int _laneWidth, int level, bool hasLight, bool lastLane);
+    ~ChaoticLane();
+
+    void run(int level);
+    bool checkCollision(Player &player);
+    void resumeLane(bool lastLane);
+};
+
+class InGame;
+
+class JurassicRoad
+{
+private:
+    int difficulty;
+    int level;
+    Player player;
+    list<Lane *> lanes;
+    InGame *ingame;
+
+public:
+    JurassicRoad(int _level, int _difficulty, InGame *_ingame);
+    ~JurassicRoad();
+    int run();
+    bool checkWin();
+    bool checkDeath();
+    void resume();
+};
+
+class InGame
+{
+private:
+    string username;
+    int32_t score, maxlevel, level, difficulty;
+    bool hasSound;
+    JurassicRoad *game;
+
+    void gameTitle(int x, int y);
+
+    bool startMenu(int x, int y);
+    bool playMenu(int x, int y);
+    bool gameMenu(int x, int y);
+    bool loadMenu(int x, int y);
+    bool saveMenu(int x, int y);
+    bool instructionMenu(int x, int y);
+    int menu(int x, int y, vector<string> &options, string menu_name);
+
+    bool settingsMenu(int x, int y);
+
+    void readTitle(string dir, int x, int y);
+    string linkBoard(int x, int y);
+    void saveFile(int x = 5, int y = 15);
+    void loadGame(string filePath = "", bool music = 0);
+    void CantLoadFile(int x = 0, int y = 0);
+
+    bool Dead(int x = 0, int y = 0);
+    bool Win(int x = 0, int y = 0);
+    void Score(int num, int x = 0, int y = 0);
+
+public:
+    InGame();
+    ~InGame();
+    void run();
+    void gameplay();
+
+    int pauseMenu(int x, int y);
+};
 
 void gotoxy(int x, int y);
+void gotoxy(OXY coord);
 void FixConsoleWindow();
 void SetWindowSize(SHORT width, SHORT height);
-void hidecursor();
+void playSound(const wchar_t *file);
+void changeFont(int W, int H);
+// void hidecursor();
+void loadCharacters();
+void loadTexture(const char *path, vector<Pixel> *g_pixels, const char *color);
 
-// DEFINE ALL THE MAIN CLASS
-
-class land {
-public:
-    virtual void run() = 0;
-    virtual ~land() {};
-};
-
-struct OXY
+template <class T>
+SimpleLane<T>::SimpleLane(OXY _anchor, int _laneWidth, int level, bool hasLight, bool lastLane)
+    : Lane(_anchor, _laneWidth, 6 * (SPAWN_DEF_SPEED - level * SPAWN_LVL_SPEED), hasLight, lastLane), goRight(rand() % 2)
 {
-    int x, y;
-    OXY(int x, int y) : x(x), y(y) {}
+}
 
-    bool operator==(OXY &b)
+template <class T>
+SimpleLane<T>::~SimpleLane()
+{
+    for (auto &obstacle : obstacles)
     {
-        return (b.x == x) && (b.y == y);
+        obstacle.erase(true);
     }
-    OXY operator+(OXY b) {
-        return OXY(x+b.x, y+b.y);
+    delete light;
+}
+template <class T>
+void SimpleLane<T>::run(int level)
+{
+    if (light)
+    {
+        light->run();
+        changeLight();
     }
-};
-
-// cây để lưu vị trí các điểm đã bị vật chiếm
-// các điểm có trong cây nếu player chạm phải = die
-
-class Tree
-{
-private:
-    bool** arr2D;
-public:
-    Tree();
-    ~Tree();
-    void insert(OXY point);
-    void remove(OXY point);
-    bool exist(OXY point);
-};
-
-class AnimalLane : public land;
-
-class carLane : public land// nhân
-{
-private:
-public:
-    carLane(Tree &t, int line, int level, int lineNum = 5);
-    ~carLane();
-
-    // tạo ra 1 lane có xe chạy qua lại
-    // lane ở dòng thứ line, độ khó là level, lưu data vào t
-    // lane có chiều rộng là lineNum(để mặc định là 5)
-    // hàm được gọi lại nhiều lần, mỗi lần sẽ cập nhật vị trí khác nhau
-    // nên có tầm 3,4 kiểu xe-
-    // nhớ có đèn giao thông
-    void run();
-};
-
-class player
-{
-private:
-    int x, y, ix, iy;
-    char head, body;
-
-public:
-    player(int x = 50, int y = 40, char head = 'O', char body = 'X');
-    void reset();
-    char run();
-    OXY position();
-};
-class inGame
-{
-private:
-    int32_t score, level_;
-    vector<char> land_;
-    void saveFile(int x = 0, int y = 0);
-    bool loadFile(string dir);
-    void Dead(int x = 0, int y = 0);
-    void Win(int x = 0, int y = 0);
-    void Score(int num, int x = 0, int y = 0);
-    void newData();
-public:
-    inGame();
-    ~inGame();
-    void loadGame(int level, string filePath = "", bool music = 0);
-};
-
-// CONSOLE FUNCTION CODE
-
-void gotoxy(OXY coord)
-{
-    gotoxy(coord.x, coord.y);
+    if (cooldown <= 0 && (!light || (light && !light->isRed())))
+    {
+        spawnObstacle(level);
+        resetCooldown();
+    }
+    else
+        --cooldown;
+    for (auto itr = obstacles.begin(); itr != obstacles.end();)
+    {
+        if (itr->move())
+        {
+            if (itr->isOffScreen())
+            {
+                itr->erase(false);
+                auto tmp = itr++;
+                obstacles.erase(tmp);
+            }
+            else
+            {
+                itr->erase(false);
+                itr->draw();
+                ++itr;
+            }
+        }
+        else
+            ++itr;
+    }
 }
 
-void gotoxy(int x, int y)
+template <class T>
+void SimpleLane<T>::changeLight()
 {
-    static HANDLE h = nullptr;
-    if (!h)
-        h = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD c = {x, y};
-    SetConsoleCursorPosition(h, c);
+    for (T &obstacle : obstacles)
+    {
+        obstacle.setMove(!light->isRed());
+    }
 }
 
-void FixConsoleWindow()
-// class này tạo menu
-// menu gồm điểm của ng chơi
-// các nút new game, load game, settings
-// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
-class RoadCrossing // quang
+template <class T>
+void SimpleLane<T>::resetCooldown()
 {
-private:
-public:
-    RoadCrossing();
-    ~RoadCrossing();
+    cooldown = defCooldown;
+}
 
-    // chạy game đã hoàn thiện(gồm menu)
-    void run();
-};
+template <class T>
+void SimpleLane<T>::resumeLane(bool lastLane)
+{
+    drawLane(lastLane);
+    for (auto &obstacle : obstacles)
+    {
+        obstacle.draw();
+    }
+}
+
+template <class T>
+void SimpleLane<T>::spawnObstacle(int level)
+{
+    obstacles.push_back(T(anchor, level, goRight, laneWidth));
+}
+template <class T>
+bool SimpleLane<T>::checkCollision(Player &player)
+{
+    bool outside = true;
+    for (auto &pixel : *player.getPixels())
+    {
+        if ((pixel.coord + player.getAnchor()).y > anchor.y && (pixel.coord + player.getAnchor()).y < anchor.y + laneWidth + 2)
+        {
+            outside = false;
+            break;
+        }
+    }
+    if (outside)
+        return false;
+    for (auto &obstacle : obstacles)
+    {
+        if (obstacle.checkCollision(&player))
+            return true;
+    }
+    return false;
+}
 
 #endif

@@ -1,3 +1,4 @@
+/*
 #include "ANIMAL.h"
 
 AnimalLane::AnimalLane(Tree& _t, int _laneNumber, int _level, int _laneWidth = 5) :
@@ -95,3 +96,4 @@ void Pterodactyl::speak() {
 void Dino::speak() {
 	playsound(DINO_SOUND_FILE);
 }
+*/

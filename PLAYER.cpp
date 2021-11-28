@@ -1,4 +1,5 @@
-﻿#include "Header.h"
+﻿/*
+#include "Header.h"
 using namespace std;
 
 
@@ -145,3 +146,4 @@ void inGame::saveFile() {
     gotoxy(1, 5);
     cout << "                            ";
 }
+*/

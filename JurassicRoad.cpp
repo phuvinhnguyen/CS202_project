@@ -94,6 +94,7 @@ int JurassicRoad::run() {
 	int DIFFICULTY = difficulty;
 	int idontknowwhatthisdoes = 1000000;
 	bool first = true;
+	SetConsoleTextAttribute(console_color, 15);
 	player.draw();
 	while (true) {
 		auto st = chrono::steady_clock::now();
@@ -135,7 +136,7 @@ int JurassicRoad::run() {
 			}
 			if (player.run()) {
 				while (true) {
-					int choice = ingame->pauseMenu(30, 2);
+					int choice = ingame->pauseMenu(50, 12);
 					if (choice == 0) {
 						resume();
 						break;

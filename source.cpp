@@ -1,3 +1,4 @@
+/*
 #include "header.h"
 using namespace std;
 
@@ -313,3 +314,4 @@ void SetWindowSize(SHORT width, SHORT height)
     SetConsoleWindowInfo(hStdout, 1, &WindowSize);
     SetConsoleScreenBufferSize(hStdout, NewSize);
 }
+*/

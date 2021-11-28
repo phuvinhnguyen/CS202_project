@@ -1,3 +1,4 @@
+/*
 #include "Header.h"
 using namespace std;
 
@@ -28,3 +29,4 @@ bool Tree::exist(OXY point)
         return arr2D[point.x][point.y];
     return 0;
 }
+*/

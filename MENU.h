@@ -1,4 +1,5 @@
-#pragma once
+/*
+pragma once
 #include "INGAME.h"
 using namespace std;
 
@@ -9,3 +10,4 @@ class menu {
 public:
 	static void run();
 };
+*/
