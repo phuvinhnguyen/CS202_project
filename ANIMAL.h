@@ -1,4 +1,5 @@
-﻿#ifndef ANIMAL
+﻿/*
+#ifndef ANIMAL
 #define ANIMAL
 
 #include "header.h"
@@ -80,3 +81,4 @@ public:
 };
 
 #endif
+*/

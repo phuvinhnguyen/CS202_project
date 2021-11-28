@@ -55,7 +55,9 @@ void InGame::Score(int num, int x, int y)
     gotoxy(x, y + 2);
     cout << "-----------------------";
 }
-InGame::InGame() : hasSound(1), maxlevel(1), level(1), score(0), game(nullptr), difficulty(3) {}
+InGame::InGame() : hasSound(1), maxlevel(1), level(1), score(0), game(nullptr), difficulty(3) {
+    PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+}
 
 InGame::~InGame() {}
 
@@ -231,7 +233,7 @@ bool InGame::gameMenu(int x, int y)
         options.push_back(string("Level Endless") + (maxlevel >= 6 ? " : UNLOCKED" : " : LOCKED"));
         options.push_back("Return");
 
-        int choice = menu(x, y, options);
+        int choice = menu(x, y, options, "CHOOSE LEVEL");
         if (choice == 6)
             return false;
         if (choice + 1 > maxlevel)
@@ -254,7 +256,7 @@ int InGame::pauseMenu(int x, int y)
     options.push_back("Save game");
     options.push_back("Load game");
     options.push_back("Exit");
-    int choice = menu(x, y, options);
+    int choice = menu(x, y, options, "PAUSE");
     while (true)
     {
         switch (choice)
@@ -281,7 +283,7 @@ bool InGame::startMenu(int x, int y)
     options.push_back("New Game");
     options.push_back("Load Game");
     options.push_back("Exit");
-    int choice = menu(x, y, options);
+    int choice = menu(x, y, options, "START");
     while (true)
     {
         switch (choice)
@@ -306,14 +308,29 @@ bool InGame::startMenu(int x, int y)
     }
 }
 
+bool InGame::instructionMenu(int x, int y) {
+    HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(console_color, 15);
+    system("cls");
+    gameTitle(35, 2);
+    gotoxy(x - 15, y - 1);
+    cout << "------------------------------------------";
+    gotoxy(x, y - 1);
+    cout << "Instruction";
+
+    while (!_kbhit());
+    return false;
+}
+
 bool InGame::playMenu(int x, int y)
 {
     vector<string> options;
     options.push_back("Play");
     options.push_back("Save");
     options.push_back("Settings");
-    options.push_back("Log Out");
-    int choice = menu(x, y, options);
+    options.push_back("How to Play");
+    options.push_back("Return");
+    int choice = menu(x, y, options, "PLAY");
     while (true)
     {
         switch (choice)
@@ -331,6 +348,10 @@ bool InGame::playMenu(int x, int y)
                 continue;
             return true;
         case 3:
+            if (instructionMenu(x, y))
+                continue;
+            return true;
+        case 4:
             return false;
         }
     }
@@ -348,20 +369,31 @@ bool InGame::settingsMenu(int x, int y)
     vector<string> options;
     options.push_back("Sound on");
     options.push_back("Sound off");
-    int choice = menu(x, y, options);
+    options.push_back("Difficulty");
+    options.push_back("Return");
+    int choice = menu(x, y, options, "SETTINGS");
     switch (choice)
     {
     case 0:
-        hasSound = 1;
-        break;
+        if (!hasSound) {
+            hasSound = 1;
+            PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+        }
+        return true;
     case 1:
-        hasSound = 0;
-        break;
+        if (hasSound) {
+            hasSound = 0;
+            PlaySound(NULL, 0, 0);
+        }
+        return true;
+    case 2:
+        return true;
+    case 3:
+        return false;
     }
-    return false;
 }
 
-int InGame::menu(int x, int y, vector<string> &options)
+int InGame::menu(int x, int y, vector<string>& options, string menu_name) 
 {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console_color, 15);
@@ -374,10 +406,25 @@ int InGame::menu(int x, int y, vector<string> &options)
         cout << options[i];
     }
 
-    gotoxy(x - 2, y + choose);
+    gotoxy(x - 2, y);
     cout << ">";
 
-    gameTitle(30, 2);
+    gameTitle(35, 2);
+    gotoxy(x - 15, y - 1);
+    cout << "------------------------------------------";
+    gotoxy(x, y - 1);
+    cout << menu_name;
+    for (int i = 0; i < choose_num; ++i)
+    {
+        gotoxy(x - 15, y + i);
+        cout << "|";
+        gotoxy(x + 26, y + i);
+        cout << "|";
+    }
+    gotoxy(x - 15, y + choose_num);
+    cout << "------------------------------------------";
+    gotoxy(x - 15, y + choose_num + 2);
+    cout << "'W' : Up     'S': Down    'SpaceBar': Select";
     while (1)
     {
         if (_kbhit())
@@ -404,7 +451,7 @@ int InGame::menu(int x, int y, vector<string> &options)
                 cout << " ";
             }
 
-            
+
             gotoxy(x - 2, y + choose);
             cout << ">";
             gotoxy(0, 0);
@@ -425,7 +472,6 @@ void InGame::run()
     SetWindowSize(ConsoleWidth, ConsoleHeight);
     changeFont(8, 12);
     //hidecursor();
-
     while (true)
     {
         if (startMenu(50, 12))

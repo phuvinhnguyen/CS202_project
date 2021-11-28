@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include <string>
 #include <vector>
@@ -30,3 +31,4 @@ vector < OXY > g_pigeonpixel = { };
 vector < OXY > g_pterodactylpixel = { };
 vector < OXY > g_dogpixel = { };
 vector < OXY > g_dinopixel = { };
+*/

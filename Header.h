@@ -256,8 +256,8 @@ private:
     bool gameMenu(int x, int y);
     bool loadMenu(int x, int y);
     bool saveMenu(int x, int y);
-
-    int menu(int x, int y, vector<string> &options);
+    bool instructionMenu(int x, int y);
+    int menu(int x, int y, vector<string> &options, string menu_name);
 
     bool settingsMenu(int x, int y);
 
