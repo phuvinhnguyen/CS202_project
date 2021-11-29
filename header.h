@@ -9,8 +9,15 @@ using namespace std;
 void gotoxy(int x, int y);
 void FixConsoleWindow();
 void SetWindowSize(SHORT width, SHORT height);
+void hidecursor();
 
 // DEFINE ALL THE MAIN CLASS
+
+class land {
+public:
+    virtual void run() = 0;
+    virtual ~land() {};
+};
 
 struct OXY
 {
@@ -32,21 +39,18 @@ struct OXY
 class Tree
 {
 private:
-    struct node;
-    // DATA
-    node *head;
-    const int MAX = 5;
-
+    bool** arr2D;
 public:
     Tree();
+    ~Tree();
     void insert(OXY point);
     void remove(OXY point);
     bool exist(OXY point);
 };
 
-class AnimalLane;
+class AnimalLane : public land;
 
-class carLane // nhân
+class carLane : public land// nhân
 {
 private:
 public:
@@ -65,33 +69,27 @@ public:
 class player
 {
 private:
-    /* data */
-    int x, y;
+    int x, y, ix, iy;
     char head, body;
 
 public:
     player(int x = 50, int y = 40, char head = 'O', char body = 'X');
-
-    // hàm điều khiển người chơi
-    // cập nhật vị trí ng chơi
+    void reset();
     char run();
-
-    // cập nhật vị trí người chơi
     OXY position();
 };
 class inGame
 {
 private:
-    /* data */
+    int32_t score, level_;
+    vector<bool> land_;
+    void saveFile();
+    void Dead(int x = 0, int y = 0);
+    void Win(int x = 0, int y = 0);
+    void Score(int num, int x = 0, int y = 0);
 public:
     inGame();
     ~inGame();
-
-    // chạy game với độ khó level
-    // có save game
-    // q để quit game
-    // trả về điểm của ng chơi-
-    // tự chọn âm thanh, hiệu ứng
     int loadGame(int level, string filePath = "", bool music = 0);
 };
 
