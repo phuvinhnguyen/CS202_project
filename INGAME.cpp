@@ -4,7 +4,7 @@ bool InGame:: Dead(int x, int y) {
     vector<string> options;
     options.push_back("Try again");
     options.push_back("Quit to menu");
-    int choice = menu(x, y, options, "Game Over");
+    int choice = menu(x, y, options, "Game Over"); 
     return !choice;
 }
 bool InGame:: Win(int x, int y) {
