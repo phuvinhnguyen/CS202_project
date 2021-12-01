@@ -1,13 +1,9 @@
-#ifndef INGAME
-#define INGAME
-
-
-#include "Header.h"
+#include "INGAME.h"
 using namespace std;
 
 
-int laneWidthCalculate(vector<char> a) {
-    return (ConsoleHeight - 5) / a.size();
+int laneWidthCalculate(vector<laneData> a) {
+    return (ConsoleHeight - 10) / a.size();
 }
 void inGame::Dead(int x, int y) {
     gotoxy(x, y);
@@ -22,6 +18,14 @@ void inGame::Dead(int x, int y) {
     {
         if (_kbhit()) break;
     }
+    gotoxy(x, y);
+    cout << "                          ";
+    gotoxy(x, y + 1);
+    cout << "                          ";
+    gotoxy(x, y + 2);
+    cout << "                          ";
+    gotoxy(x, y + 3);
+    cout << "                          ";
 }
 void inGame::Win(int x, int y) {
     gotoxy(x, y);
@@ -36,89 +40,86 @@ void inGame::Win(int x, int y) {
     {
         if (_kbhit()) break;
     }
+    gotoxy(x, y);
+    cout << "                           ";
+    gotoxy(x, y + 1);
+    cout << "                           ";
+    gotoxy(x, y + 2);
+    cout << "                           ";
+    gotoxy(x, y + 3);
+    cout << "                           ";
 }
-void inGame::Score(int num, int x, int y) {
+void inGame::Score(int x, int y) {
     gotoxy(x, y);
     cout << "-----------------------";
     gotoxy(x, y + 1);
-    cout << "|your score: " << num;
+    cout << "|your score: " << SCORE;
     gotoxy(x, y + 2);
     cout << "-----------------------";
 }
-inGame::inGame():level_(0), score(0) {}
+inGame::inGame():LEVEL(0), SCORE(0) {}
 inGame::~inGame() {}
 void inGame::loadGame(int level, string filePath, bool music)
 {
+    SOUND = music;
+
     //load game data
-    level_ = level;
+    LEVEL = level;
     loadFile(filePath);
 
-    vector<land*> land__;
+    vector<land> LANE;
     for (int i = 0;; i++)
     {
         //pre-prepare
         if (i > 0) newData();
         Tree tree;
-        player plr;
-        int lane_width = laneWidthCalculate(land_);
+        player plr(50, 46);
+        int lane_width = laneWidthCalculate(LANE_DATA);
 
         //pre-prepare
-        for (int j = 0; j < land_.size(); j++) {
-            switch (land_[j]) {
-            case 32:
-                land__.push_back(new animalLane(tree, j * (lane_width + 2) + 4, level_, lane_width, 1));
+        for (int j = 0; j < LANE_DATA.size(); j++) {
+            switch (LANE_DATA[j].carLane) {
+            case true:
+                LANE.push_back(land(&tree, j * (lane_width + 1) + 5, LEVEL, lane_width, LANE_DATA[j].goRight, 1, LANE_DATA[j].x_init, LANE_DATA[j].red, LANE_DATA[j].green));
                 break;
-            case 33:
-                land__.push_back(new animalLane(tree, j * (lane_width + 2) + 4, level_, lane_width, 0));
+            case false:
+                LANE.push_back(land(&tree, j * (lane_width + 1) + 5, LEVEL, lane_width, LANE_DATA[j].goRight, 0));
                 break;
-            case 34:
-                land__.push_back(new carLane(tree, j * (lane_width + 2) + 4, level_, lane_width, 0));
-                break;
-            default:
-                land__.push_back(new carLane(tree, j * (lane_width + 2) + 4, level_, lane_width, 1));
             }
         }
 
         //run game
+        for (int i = 0; i < LANE_DATA.size(); i++)
+            LANE[i].init();
         system("cls");
         while (1) {
-            Score(score);
-            if (plr.position().y <= 4) {
-                if (music) PlaySound(win_sound, NULL, SND_FILENAME | SND_ASYNC);
+            Score();
+            if (plr.position().y <= 3) {
+                if (music) PlaySound(WIN_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Win();
-                score += level;
-                for (int i = 0; i < land_.size(); i++) delete land__[i];
-                land__.clear();
+                SCORE += level;
+                LANE.clear();
                 break;
             }
 
-            char x = plr.run();
-            if (x == 'q') {
-                for (int i = 0; i < land_.size(); i++) delete land__[i];
-                land__.clear();
-                return;
-            }
-            else if (x == 'v') {
-                music = !music;
-            }
-            else if (x == 'r') {
-                saveFile();
-            }
+            if (options(plr.run())) return;
 
             if (tree.exist(plr.position())) {
-                score--;
-                if (music) PlaySound(lose_sound, NULL, SND_FILENAME | SND_ASYNC);
+                SCORE--;
+                if (music) PlaySound(LOSE_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Dead();
                 plr.reset();
             }
 
-            for (int i = 0; i < land_.size(); i++) {
-                land__[i]->run(music);
+            for (int i = 0; i < LANE_DATA.size(); i++) {
+                LANE[i].run(music);
+                gotoxy(0, i * (lane_width + 1) + 4);
+                cout << "-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -";
             }
 
             if (tree.exist(plr.position())) {
-                score--;
-                if (music) PlaySound(lose_sound, NULL, SND_FILENAME | SND_ASYNC);
+                SCORE--;
+                if (music) PlaySound(LOSE_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Dead();
                 plr.reset();
             }
@@ -149,14 +150,14 @@ void inGame::saveFile(int x, int y) {
             cout << "|     FILE CANNOT OPEN      |";
         }
         else {
-            ofs.write((char*)&score, 4);
-            ofs.write((char*)&level_, 4);
-            int32_t s = land_.size();
+            ofs.write((char*)&SCORE, 4);
+            ofs.write((char*)&LEVEL, 4);
+            int32_t s = LANE_DATA.size();
             ofs.write((char*)&s, 4);
-            for (int i = 0; i < land_.size(); i++)
+            for (int i = 0; i < LANE_DATA.size(); i++)
             {
-                char a = land_[i];
-                ofs.write((char*)&a, 1);
+                laneData a = LANE_DATA[i];
+                ofs.write((char*)&a, sizeof(laneData));
             }
             gotoxy(x + 15, y + 3);
             cout << "|     SUCCESS      |";
@@ -183,32 +184,39 @@ bool inGame::loadFile(string dir) {
     ifstream ifs(dir, ios::binary);
     if (!ifs.good()) {
         ifs.close();
-        score = 0;
-        int land_number = rand() % 2;
-        for (int i = 0; i < land_number; i++) {
-            land_.push_back(rand() % 4 + 32);
+        SCORE = 0;
+        int LANE_DATAnumber = rand() % MAX_LANE_NUM + MIN_LANE_NUM;
+        for (int i = 0; i < LANE_DATAnumber; i++) {
+            LANE_DATA.push_back(laneData(rand() % 2, rand() % 2, RED_LIGHT_TIME + rand() % RAND_LIGHT_TIME, GREEN_LIGHT_TIME + rand() % RAND_LIGHT_TIME, _X_INIT_LEFT + rand() % _X_INIT_RANGE));
         }
         return 0;
     }
     else {
-        ifs.read((char*)&score, 4);
-        ifs.read((char*)&level_, 4);
+        ifs.read((char*)&SCORE, 4);
+        ifs.read((char*)&LEVEL, 4);
         int32_t s;
         ifs.read((char*)&s, 4);
-        land_.clear();
+        LANE_DATA.clear();
         for (int i = 0; i < s; i++) {
-            char a;
-            ifs.read((char*)&a, 1);
-            land_.push_back(a);
+            laneData a;
+            ifs.read((char*)&a, sizeof(laneData));
+            LANE_DATA.push_back(a);
         }
         ifs.close();
         return 1;
     }
 }
 void inGame::newData() {
-    int land_number = rand() % 2;
-    for (int i = 0; i < land_number; i++) {
-        land_.push_back(rand() % 4 + 32);
+    int lanenumber = rand() % MAX_LANE_NUM + MIN_LANE_NUM;
+    LANE_DATA.clear();
+    LEVEL++;
+    for (int i = 0; i < lanenumber; i++) {
+        LANE_DATA.push_back(laneData(rand() % 2, rand() % 2, RED_LIGHT_TIME + rand() % RAND_LIGHT_TIME, GREEN_LIGHT_TIME + rand() % RAND_LIGHT_TIME, _X_INIT_LEFT + rand() % _X_INIT_RANGE));
     }
 }
-#endif // !INGAME
+bool inGame::options(char a) {
+    if (a == 'q') return true;
+    else if (a == 'r') saveFile();
+    else if (a == 'v') SOUND = !SOUND;
+    return false;
+}

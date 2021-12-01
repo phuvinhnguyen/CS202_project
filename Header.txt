@@ -1,0 +1,26 @@
+﻿using namespace std;
+
+
+// DEFINE ALL THE MAIN CLASS
+
+class land;
+struct OXY;
+class Tree;
+class player;
+class inGame;
+/*
+// class này tạo menu
+// menu gồm điểm của ng chơi
+// các nút new game, load game, settings
+// setting: bật tắt nhạc, chọn nhân vật, chọn độ khó(hoặc độ khó tăng dần)
+class RoadCrossing // quang
+{
+private:
+public:
+    RoadCrossing();
+    ~RoadCrossing();
+
+    // chạy game đã hoàn thiện(gồm menu)
+    void run();
+};
+*/
