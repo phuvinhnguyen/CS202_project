@@ -215,7 +215,7 @@ void InGame::saveFile(int x, int y)
     gotoxy(x, y + 2);
     cout << "                                                                             ";
     gotoxy(x, y + 3);
-    cout << "                            ";
+    cout << "                             ";
 }
 
 void InGame::readTitle(string dir, int x, int y)
