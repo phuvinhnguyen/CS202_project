@@ -7,7 +7,7 @@ Lane::Lane(OXY _anchor, int _laneWidth, int _defCooldown, bool hasLight, bool la
 	anchor(_anchor), laneWidth(_laneWidth), defCooldown(_defCooldown) {
 	if (hasLight) light = new TrafficLight(anchor);
 	else light = nullptr;
-	drawLane(lastLane);
+	drawLane(lastLane);                             
 };
 
 Lane::~Lane() { }
