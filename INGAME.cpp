@@ -73,7 +73,7 @@ void InGame::gameplay(int x, int y) {
                     PlaySound(L"win.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
                     Sleep(10000);
                 }
-                SetConsoleTextAttribute(console_color, 15);
+                SetConsoleTextAttribute(console_color, 15); 
                 system("cls");
                 gotoxy(30, 10);
                 cout << "---------------------------------------------------";
