@@ -1,5 +1,5 @@
 #include "Header.h"
-
+    
 bool InGame:: Dead(int x, int y) {
     vector<string> options;
     options.push_back("Try again");
