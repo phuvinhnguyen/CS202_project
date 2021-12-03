@@ -10,7 +10,7 @@ Lane::Lane(OXY _anchor, int _laneWidth, int _defCooldown, bool hasLight, bool la
 	drawLane(lastLane);
 };
 
-Lane::~Lane() { }              
+Lane::~Lane() { }                                        
 void Lane::drawLane(bool lastLane) {
 	HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
 	gotoxy(anchor);
