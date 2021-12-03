@@ -217,7 +217,7 @@ void InGame::saveFile(int x, int y)
     gotoxy(x, y + 3);
     cout << "                             ";
 }
-
+// It's hacking time
 void InGame::readTitle(string dir, int x, int y)
 {
     ifstream ifs(dir);
