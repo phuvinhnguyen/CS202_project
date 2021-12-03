@@ -8,7 +8,8 @@ const int choose_num = 4;
 void menu::gameTitle(int x, int y) {
 	gotoxy(x, y);
 	cout << "PASS AWAY GAME";
-}
+} 
+
 int menu::button(int x, int y) {
 	gotoxy(x, y);
 	cout << "new game";
