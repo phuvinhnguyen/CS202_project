@@ -15,6 +15,7 @@ void AnimalLane::drawLane() {
 	gotoxy(anchor.x, anchor.y + laneWidth);
 	cout << g_laneline;
 }
+
 bool AnimalLane::run() {
 	if (spawnCooldown <= 0) {
 		spawnAnimal();
@@ -35,12 +36,15 @@ bool AnimalLane::run() {
 	else --moveCooldown;
 	return checkCollision();
 }
+
 void AnimalLane::resetSpawn() {
 	spawnCooldown = (DEFAULT_SPAWN_SPEED - LEVEL_SPAWN_SPEED * level);
 }
+
 void AnimalLane::resetMove() {
 	moveCooldown = (DEFAULT_MOVE_SPEED - LEVEL_MOVE_SPEED * level);
 }
+
 void AnimalLane::spawnAnimal() {
 	int animal_type = rand() % ANIMAL_TYPE;
 	Animal* animal = nullptr;
