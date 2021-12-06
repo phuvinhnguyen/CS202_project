@@ -13,7 +13,7 @@ JurassicRoad::JurassicRoad(int _level, int _difficulty, InGame* _ingame)
 		lanes.push_back(lane);
 		lane = new SimpleLane<Cougar>(OXY(ScreenLeft, cury += 7), 5, difficulty, 0, 1);
 		lanes.push_back(lane);
-		player.setDefPos(OXY(PLAYER_DEF_POS_X, cury + 10));
+		player.setDefPos(OXY(PLAYER_DEF_POS_X, cury + 10)); 
 		break;
 	}
 	case 2: {
