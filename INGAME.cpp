@@ -475,7 +475,7 @@ bool InGame::settingsMenu (int x, int y)
             return false;
         }
     }
-}
+} 
 
 int InGame:: menu(int x, int y, vector<string>& options, string menu_name) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
