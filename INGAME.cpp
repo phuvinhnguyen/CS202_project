@@ -556,6 +556,7 @@ void InGame::run()
 {
     SetWindowSize(ConsoleWidth, ConsoleHeight);
     changeFont(12, 16);
+    ShowConsoleCursor(false);
     //hidecursor();
     while (true)
     {

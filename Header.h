@@ -281,6 +281,7 @@ public:
 };
 
 void gotoxy(int x, int y);
+void ShowConsoleCursor(bool showFlag);
 void gotoxy(OXY coord);
 void FixConsoleWindow();
 void SetWindowSize(SHORT width, SHORT height);
