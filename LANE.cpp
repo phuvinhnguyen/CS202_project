@@ -2,7 +2,7 @@
 using namespace std;
 
 
-land::land(Tree* _t, int _laneLine, int _level, int _laneWidth, bool _right, bool _carLane, int trafficLightPos, int red, int green) :
+land::land(Tree<gameObj*>* _t, int _laneLine, int _level, int _laneWidth, bool _right, bool _carLane, int trafficLightPos, int red, int green) :
 	laneLine(_laneLine), laneWidth(_laneWidth), level(_level), goRight(_right), count(DEFAULT_SPAWN_SPEED) {
 	tr = _t;
 	if (_carLane) carLane = ANIMAL_TYPE;
@@ -97,5 +97,6 @@ land::~land() {
 }
 void land::init() {
 	int init_obj = rand() % (level > 5 ? 5 : level) + INITIAL_OBJECT_NUM;
-	for (int i = 0; i < init_obj; i++) Spawn(rand() % (ConsoleWidth - 16) + 8);
+	for (int i = 0; i < init_obj; i++)
+		Spawn(rand() % (ConsoleWidth - 16) + 8);
 }

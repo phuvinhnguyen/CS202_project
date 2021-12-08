@@ -3,7 +3,7 @@ using namespace std;
 
 
 int laneWidthCalculate(vector<laneData> a) {
-    return (ConsoleHeight - 10) / a.size();
+    return (ConsoleHeight - 8) / (a.size() + 1);
 }
 void inGame::Dead(int x, int y) {
     gotoxy(x, y);
@@ -72,8 +72,8 @@ void inGame::loadGame(int level, string filePath, bool music)
     {
         //pre-prepare
         if (i > 0) newData();
-        Tree tree;
-        player plr(50, 46);
+        Tree<gameObj*> tree;
+        player plr;
         int lane_width = laneWidthCalculate(LANE_DATA);
 
         //pre-prepare
@@ -93,31 +93,35 @@ void inGame::loadGame(int level, string filePath, bool music)
             LANE[i].init();
         system("cls");
         while (1) {
+            if (options(plr.run())) return;
+
             Score();
-            if (plr.position().y <= 3) {
+            if (plr.position().y <= 2) {
                 if (music) PlaySound(WIN_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Win();
-                SCORE += level;
+                SCORE += LEVEL;
+                LEVEL++;
                 LANE.clear();
                 break;
             }
 
-            if (options(plr.run())) return;
-
-            if (tree.exist(plr.position())) {
+            if (plr.collide(tree)) {
                 SCORE--;
                 if (music) PlaySound(LOSE_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Dead();
                 plr.reset();
             }
 
+            // lane line
             for (int i = 0; i < LANE_DATA.size(); i++) {
                 LANE[i].run(music);
                 gotoxy(0, i * (lane_width + 1) + 4);
                 cout << "-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -";
             }
+            gotoxy(0, LANE_DATA.size() * (lane_width + 1) + 4);
+            cout << "-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -";
 
-            if (tree.exist(plr.position())) {
+            if (plr.collide(tree)) {
                 SCORE--;
                 if (music) PlaySound(LOSE_SOUND_FILE, NULL, SND_FILENAME | SND_ASYNC);
                 Dead();

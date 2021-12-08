@@ -30,7 +30,7 @@ vector < OXY > g_biketail = { OXY(0,0) };
 
 
 
-gameObj::gameObj(Tree* _t, OXY init, bool _goRight, int _level) : pos(init), goRight(_goRight), count(0), alive(1){
+gameObj::gameObj(Tree<gameObj*>* _t, OXY init, bool _goRight, int _level) : pos(init), goRight(_goRight), count(0), alive(1){
 	COUNTLOOP = DEFAULT_MOVE_SPEED + _level * LEVEL_MOVE_SPEED + rand() % RANDOM_MOVE_SPEED;
 	tr = _t;
 }
@@ -48,28 +48,40 @@ void gameObj::move() {
 	}
 
 	for (int i = 0; i < pixels_head.size(); i++) {
-		if (tr->exist(pos + pixels_head[i] + mov_vec)) {
+		//xac nhan va cham
+		gameObj* objectHit = tr->exist(pos + pixels_head[i] + mov_vec);
+		if (objectHit) {
 			if (!moral)
 			{
-				alive = 0;
-				rm();
+				/*alive = 0;
+				rm();*/
+				if (objectHit->priority > this->priority) {
+					alive = 0;
+					rm();
+					speak();
+				}
+				else {
+					objectHit->alive = 0;
+					objectHit->rm();
+					objectHit->speak();
+				}
 			}
 			return;
 		}
 	}
 
 	for (int i = 0; i < pixels_head.size(); i++) {
-		tr->insert(pos + pixels_head[i] + mov_vec);
+		tr->insert(pos + pixels_head[i] + mov_vec, this);
 		tr->remove(pos + pixels_head[i]);
 	}
 
 	for (int i = 0; i < pixels_body.size(); i++) {
-		tr->insert(pos + pixels_body[i] + mov_vec);
+		tr->insert(pos + pixels_body[i] + mov_vec, this);
 		tr->remove(pos + pixels_body[i]);
 	}
 
 	for (int i = 0; i < pixels_tail.size(); i++) {
-		tr->insert(pos + pixels_tail[i] + mov_vec);
+		tr->insert(pos + pixels_tail[i] + mov_vec, this);
 		tr->remove(pos + pixels_tail[i]);
 		gotoxy(pos + pixels_tail[i]);
 		cout << " ";
@@ -100,7 +112,8 @@ void gameObj::rm() {
 	pixels_tail.clear();
 }
 
-dog::dog(Tree* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+dog::dog(Tree<gameObj*>* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+	priority = 1;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_doghead;
@@ -120,7 +133,8 @@ dog::~dog() {
 	rm();
 }
 
-dino::dino(Tree* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+dino::dino(Tree<gameObj*>* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+	priority = 4;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_dinohead;
@@ -140,7 +154,8 @@ dino::~dino() {
 	rm();
 }
 
-pterodactyl::pterodactyl(Tree* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+pterodactyl::pterodactyl(Tree<gameObj*>* _t, int level, OXY init, bool _goRight) : gameObj(_t, init, _goRight, level) {
+	priority = 3;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_pterodactylhead;
@@ -160,7 +175,8 @@ pterodactyl::~pterodactyl() {
 	rm();
 }
 
-pigeon::pigeon(Tree* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+pigeon::pigeon(Tree<gameObj*>* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+	priority = 0;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_pigeonhead;
@@ -181,7 +197,8 @@ pigeon::~pigeon() {
 }
 
 
-car::car(Tree* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+car::car(Tree<gameObj*>* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+	priority = 1;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_carhead;
@@ -201,7 +218,8 @@ car::~car() {
 	rm();
 }
 
-truck::truck(Tree* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+truck::truck(Tree<gameObj*>* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+	priority = 4;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_truckhead;
@@ -221,7 +239,8 @@ truck::~truck() {
 	rm();
 }
 
-alien::alien(Tree* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+alien::alien(Tree<gameObj*>* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+	priority = 6;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_alienhead;
@@ -241,7 +260,8 @@ alien::~alien() {
 	rm();
 }
 
-bike::bike(Tree* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+bike::bike(Tree<gameObj*>* _t, int level, OXY init, bool _goRight ) : gameObj(_t, init, _goRight, level) {
+	priority = 0;
 	if (goRight) mov_vec = OXY(1, 0);
 	else mov_vec = OXY(-1, 0);
 	pixels_head = g_bikehead;

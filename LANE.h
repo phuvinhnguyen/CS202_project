@@ -15,11 +15,11 @@ class gameObj {
 protected:
     vector<OXY> pixels_head, pixels_tail, pixels_body;
     OXY pos, mov_vec;
-    Tree* tr;
+    Tree<gameObj*>* tr;
     bool alive, goRight, moral;
-    int COUNTLOOP, count;
+    int COUNTLOOP, count, priority;
 public:
-    gameObj(Tree* _t, OXY init, bool _goRight, int _level);
+    gameObj(Tree<gameObj*>* _t, OXY init, bool _goRight, int _level);
     void move();
     bool dead() { return !alive; }
     OXY getPos() { return pos; }
@@ -33,7 +33,7 @@ public:
 class dog : public gameObj
 {
 public:
-    dog(Tree* _t, int level, OXY init, bool _goRight);
+    dog(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~dog();
@@ -42,7 +42,7 @@ public:
 class dino : public gameObj
 {
 public:
-    dino(Tree* _t, int level, OXY init, bool _goRight);
+    dino(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~dino();
@@ -51,7 +51,7 @@ public:
 class pigeon : public gameObj
 {
 public:
-    pigeon(Tree* _t, int level, OXY init, bool _goRight);
+    pigeon(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~pigeon();
@@ -60,7 +60,7 @@ public:
 class pterodactyl : public gameObj
 {
 public:
-    pterodactyl(Tree* _t, int level, OXY init, bool _goRight);
+    pterodactyl(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~pterodactyl();
@@ -70,7 +70,7 @@ public:
 class car : public gameObj
 {
 public:
-    car(Tree* _t, int level, OXY init, bool _goRight);
+    car(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~car();
@@ -79,7 +79,7 @@ public:
 class truck : public gameObj
 {
 public:
-    truck(Tree* _t, int level, OXY init, bool _goRight);
+    truck(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~truck();
@@ -88,7 +88,7 @@ public:
 class alien : public gameObj
 {
 public:
-    alien(Tree* _t, int level, OXY init, bool _goRight);
+    alien(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~alien();
@@ -97,14 +97,14 @@ public:
 class bike : public gameObj
 {
 public:
-    bike(Tree* _t, int level, OXY init, bool _goRight);
+    bike(Tree<gameObj*>* _t, int level, OXY init, bool _goRight);
     void speak();
     void draw(OXY a);
     ~bike();
 };
 
 class land {
-    Tree* tr;
+    Tree<gameObj*>* tr;
     int level, laneWidth, countSpawnLoop, laneLine, count, carLane;
     bool goRight;
     int x_init, x_stop_line, redlight_time, timer, greenlight_time;
@@ -114,7 +114,7 @@ class land {
     bool trafficLight();
 public:
     void init();
-    land(Tree* _t, int laneLine, int _level = 0, int _landWidth = 5, bool _right = 0, bool _carLane = 1, int trafficLightPos = -100, int red = 10, int green = 10);
+    land(Tree<gameObj*>* _t, int laneLine, int _level = 0, int _landWidth = 5, bool _right = 0, bool _carLane = 1, int trafficLightPos = -100, int red = 10, int green = 10);
     void run(bool soundOn);
     ~land();
 };
