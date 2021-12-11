@@ -245,10 +245,8 @@ public:
 class InGame {
 private:
     string username;
-    int32_t score, maxlevel, level, difficulty;
-    bool hasSound;
+    int32_t score, maxlevel, level, difficulty, endless_lvl;
     JurassicRoad *game;
-
     void gameTitle(int x, int y);
 
     bool startMenu(int x, int y);
@@ -279,6 +277,7 @@ public:
     void gameplay(int x, int y);
 
     int pauseMenu(int x, int y);
+    bool hasSound;
 };
 
 void gotoxy(int x, int y);
