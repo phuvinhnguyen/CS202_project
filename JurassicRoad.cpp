@@ -78,6 +78,37 @@ JurassicRoad::JurassicRoad(int _level, int _difficulty, InGame* _ingame)
 		player.setDefPos(OXY(PLAYER_DEF_POS_X, cury + 20));
 		break;
 	}
+	case 7: {
+		int cury = ScreenTop - 6;
+		Lane* lane;
+		for (int i = 0; i < 4; ++i) {
+			int choice = rand() % 6;
+			int k = (i == 3);
+			switch (choice) {
+			case 0: 
+				lane = new SimpleLane<Pigeon>(OXY(ScreenLeft, cury += 7), 5, difficulty, 0, k);
+				break;
+			case 1:
+				lane = new SimpleLane<Pterodactyl>(OXY(ScreenLeft, cury += 7), 5, difficulty, 0, k);
+				break;
+			case 2:
+				lane = new SimpleLane<Car>(OXY(ScreenLeft, cury += 7), 5, difficulty, rand() % 2, k);
+				break;
+			case 3:
+				lane = new SimpleLane<Cougar>(OXY(ScreenLeft, cury += 7), 5, difficulty, 0, k);
+				break;
+			case 4:
+				lane = new SimpleLane<Ceratosaurus>(OXY(ScreenLeft, cury += 7), 5, difficulty, 0, k);
+				break;
+			case 5:
+				lane = new ChaoticLane(OXY(ScreenLeft, cury += 7), 5, difficulty, rand() % 100 < 60, k);
+				break;
+			}
+			lanes.push_back(lane);
+		}
+		player.setDefPos(OXY(PLAYER_DEF_POS_X, cury + 10));
+		break;
+	}
 	}
 }
 
@@ -95,11 +126,11 @@ int JurassicRoad::run() {
 	int idontknowwhatthisdoes = 1000000;
 	bool first = true;
 	SetConsoleTextAttribute(console_color, 15);
-	int score = 0;
+	double score = 0;
 	player.draw();
 	auto BEG = chrono::steady_clock::now();
 	while (true) {
-		score += DIFFICULTY * 100;
+		if (level == 6) score += DIFFICULTY / 10000.0;
 		auto st = chrono::steady_clock::now();
 		for (auto& lane : lanes) {
 			lane->run(DIFFICULTY);
@@ -159,18 +190,28 @@ int JurassicRoad::run() {
 			if (level == 6) {
 				auto ED = chrono::steady_clock::now();
 				long long duration = chrono::duration_cast<chrono::seconds>(ED - BEG).count();
+				if (ingame->hasSound) {
+					PlaySound(L"game_over.wav", NULL, SND_FILENAME);
+					PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+				}
 				SetConsoleTextAttribute(console_color, 15);
 				system("cls");
-				gotoxy(50, 20);
-				cout << "-------------------" << "--------------------------";
-				gotoxy(50, 21);
-				cout << "|   YOU DIED       " << "                         |";
-				gotoxy(50, 22);
-				cout << "|   SURVIVAL TIME: " << duration << "s            |";
-				gotoxy(50, 23);
-				cout << "|   YOUR SCORE:    " << score << " points         |";
-				gotoxy(50, 24);
-				cout << "-------------------" << "--------------------------";
+				gotoxy(30, 10);
+				cout << "-----------------------------------------";
+				gotoxy(30, 11);
+				cout << "|   YOU DIED";
+				gotoxy(70, 11);
+				cout << "|";
+				gotoxy(30, 12);
+				cout << "|   SURVIVAL TIME: " << duration << "s";
+				gotoxy(70, 12);
+				cout << "|";
+				gotoxy(30, 13);
+				cout << "|   YOUR SCORE: " << round(score) << " points";
+				gotoxy(70, 13);
+				cout << "|";
+				gotoxy(30, 14);
+				cout << "-----------------------------------------";
 				while (_kbhit()) {
 					char a = _getch();
 				}
@@ -214,7 +255,10 @@ void JurassicRoad::resume() {
 	}
 	player.draw();
 	gotoxy(40, 2);
-	cout << "LEVEL: " << level;
+	cout << "LEVEL: ";
+	if (level == 6) cout << "SURVIVAL";
+	else if (level == 7) cout << "ENDLESS";
+	else cout << level;
 	gotoxy(40, 3);
 	cout << "DIFFICULTY: " << difficulty;
 }

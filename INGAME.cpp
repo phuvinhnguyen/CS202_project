@@ -23,7 +23,7 @@ void InGame::Score(int num, int x, int y)
     gotoxy(x, y + 2);
     cout << "-----------------------";
 }
-InGame::InGame() : hasSound(1), maxlevel(1), level(1), score(0), game(nullptr), difficulty(3) {
+InGame::InGame() : hasSound(1), maxlevel(1), level(1), score(0), game(nullptr), difficulty(3), endless_lvl(0) {
     PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 }
 
@@ -44,6 +44,7 @@ bool InGame::loadGame(string filePath, bool music)
         ifs.read((char *)&level, 4);
         ifs.read((char *)&difficulty, 4);
         ifs.read((char *)&maxlevel, 4);
+        ifs.read((char*)&endless_lvl, 4);
         ifs.close();
         return true;
     }
@@ -52,33 +53,58 @@ bool InGame::loadGame(string filePath, bool music)
 
 void InGame::gameplay(int x, int y) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
-    while (level <= 6)
+    while (level <= 7)
     {
         SetConsoleTextAttribute(console_color, 15);
         system("cls");
         maxlevel = max(maxlevel, level);
         game = new JurassicRoad(level, difficulty, this);
         gotoxy(40, 2);
-        cout << "LEVEL: " << level;
+        cout << "LEVEL: ";
+        if (level == 6) cout << "SURVIVAL";
+        else if (level == 7) cout << "ENDLESS";
+        else cout << level;
         gotoxy(40, 3);
         cout << "DIFFICULTY: " << difficulty;
         int wtf = game->run();
         if (wtf == 1) { 
-            if (hasSound) {
-                if (level == 5) PlaySound(L"win.wav", NULL, SND_FILENAME);
-                else PlaySound(L"level_complete.wav", NULL, SND_FILENAME);
+            if (level == 5) {
+                if (hasSound) {
+                    PlaySound(L"win.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+                    Sleep(10000);
+                }
+                SetConsoleTextAttribute(console_color, 15);
+                system("cls");
+                gotoxy(30, 10);
+                cout << "---------------------------------------------------";
+                gotoxy(30, 11);
+                cout << "|   YOU WON!!!";
+                gotoxy(80, 11);
+                cout << "|";
+                gotoxy(30, 12);
+                cout << "|   You have successfully come home in one piece.";
+                gotoxy(80, 12);
+                cout << "|";
+                gotoxy(30, 13);
+                cout << "|   Mom is waiting for you inside. Come on in.";
+                gotoxy(80, 13);
+                cout << "|";
+                gotoxy(30, 14);
+                cout << "---------------------------------------------------";
                 while (_kbhit()) char a = _getch();
                 while (!_kbhit());
                 char a = _getch();
-                PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
             }
+            else if (hasSound && level != 7) PlaySound(L"level_complete.wav", NULL, SND_FILENAME);
+            if (hasSound && level != 7) PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
             if (level == 5) {
-                maxlevel = 6;
+                maxlevel = 7;
                 break;
             }
-            else ++level;
+            else if (level != 7) ++level;
+            else ++endless_lvl;
             maxlevel = max(maxlevel, level);
-            if (!Win(x, y)) return;
+            if (level != 7) if (!Win(x, y)) return;
         }
         else if (wtf == 0)
         {
@@ -88,8 +114,36 @@ void InGame::gameplay(int x, int y) {
                     PlaySound(L"game_over.wav", NULL, SND_FILENAME);
                     PlaySound(L"background_music.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
                 }
-                if (!Dead(x, y)) return;
+                if (level == 7) {
+                    SetConsoleTextAttribute(console_color, 15);
+                    system("cls");
+                    gotoxy(30, 10);
+                    cout << "-----------------------------------------";
+                    gotoxy(30, 11);
+                    cout << "|   YOU DIED";
+                    gotoxy(70, 11);
+                    cout << "|";
+                    gotoxy(30, 12);
+                    cout << "|   LEVEL COUNT: " << endless_lvl << " levels";
+                    gotoxy(70, 12);
+                    cout << "|";
+                    gotoxy(30, 13);
+                    cout << "|   YOUR SCORE: " << endless_lvl * difficulty << " points";
+                    gotoxy(70, 13);
+                    cout << "|";
+                    gotoxy(30, 14);
+                    cout << "-----------------------------------------";
+                    while (_kbhit()) {
+                        char a = _getch();
+                    }
+                    while (!_kbhit()) {
+
+                    }
+                    char a = _getch();
+                    endless_lvl = 0;
+                }
             }
+            if (!Dead(x, y)) return;
         }
         else
         {
@@ -143,6 +197,7 @@ void InGame::saveFile(int x, int y)
             ofs.write((char *)&level, 4);
             ofs.write((char *)&difficulty, 4);
             ofs.write((char *)&maxlevel, 4);
+            ofs.write((char*)&endless_lvl, 4);
         }
         ofs.close();
         gotoxy(x, y+5);
@@ -207,11 +262,12 @@ bool InGame::gameMenu(int x, int y)
         string name = "Level ";
         options.push_back(name + to_string(i) + (i <= maxlevel ? " : UNLOCKED" : " : LOCKED"));
     }
-    options.push_back(string("Level Endless") + (maxlevel >= 6 ? " : UNLOCKED" : " : LOCKED"));
+    options.push_back(string("Level Survival") + (maxlevel >= 6 ? " : UNLOCKED" : " : LOCKED"));
+    options.push_back(string("Level Endless") + (maxlevel >= 7 ? " : UNLOCKED" : " : LOCKED"));
     options.push_back("Return");
 
     int choice = menu(x, y, options, "CHOOSE LEVEL");
-    if (choice == 6)
+    if (choice == 7)
         return false;
     if (choice + 1 > maxlevel)
         return true;
@@ -228,7 +284,7 @@ bool InGame::difficultyMenu(int x, int y) {
     options.push_back("Difficulty 4");
     options.push_back("Difficulty 5");
     options.push_back("Return");
-    int choice = menu(x, y, options, "PAUSE");
+    int choice = menu(x, y, options, "DIFFICULTY SELECTION");
     if (choice != 6) {
         difficulty = choice + 1;
     }
@@ -238,7 +294,7 @@ bool InGame::difficultyMenu(int x, int y) {
 bool InGame::saveMenu(int x, int y)
 {
     system("cls");
-    saveFile(15, 12);
+    saveFile(20, 12);
     return false;
 }
 
@@ -290,6 +346,7 @@ bool InGame::startMenu(int x, int y)
                 score = 0;
                 game = nullptr;
                 difficulty = 3;
+                endless_lvl = 0;
                 first = false;
             }
             if (playMenu(x, y))
@@ -384,7 +441,7 @@ bool InGame::playMenu(int x, int y)
 bool InGame::loadMenu(int x, int y)
 {
     system("cls");
-    return loadGame(readDirectory(10, 12), hasSound);
+    return loadGame(readDirectory(20, 12), hasSound);
 }
 
 bool InGame::settingsMenu(int x, int y)
@@ -498,7 +555,7 @@ string InGame::linkBoard(int x = 5, int y = 5)
 void InGame::run()
 {
     SetWindowSize(ConsoleWidth, ConsoleHeight);
-    changeFont(8, 12);
+    changeFont(12, 16);
     //hidecursor();
     while (true)
     {
