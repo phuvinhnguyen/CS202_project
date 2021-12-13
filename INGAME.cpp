@@ -1,13 +1,13 @@
 #include "Header.h"
-
-bool InGame::Dead(int x, int y) {
+    
+bool InGame:: Dead(int x, int y) {
     vector<string> options;
     options.push_back("Try again");
     options.push_back("Quit to menu");
-    int choice = menu(x, y, options, "Game Over");
+    int choice = menu(x, y, options, "Game Over"); 
     return !choice;
 }
-bool InGame::Win(int x, int y) {
+bool InGame:: Win(int x, int y) {
     vector<string> options;
     options.push_back("Continue");
     options.push_back("Quit to menu");
@@ -73,7 +73,7 @@ void InGame::gameplay(int x, int y) {
                     PlaySound(L"win.wav", NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
                     Sleep(10000);
                 }
-                SetConsoleTextAttribute(console_color, 15);
+                SetConsoleTextAttribute(console_color, 15); 
                 system("cls");
                 gotoxy(30, 10);
                 cout << "---------------------------------------------------";
@@ -215,9 +215,9 @@ void InGame::saveFile(int x, int y)
     gotoxy(x, y + 2);
     cout << "                                                                             ";
     gotoxy(x, y + 3);
-    cout << "                            ";
+    cout << "                             ";
 }
-
+// It's hacking time
 void InGame::readTitle(string dir, int x, int y)
 {
     ifstream ifs(dir);
@@ -233,7 +233,7 @@ void InGame::readTitle(string dir, int x, int y)
     }
     ifs.close();
 }
-string readDirectory(int x, int y) {
+string readDirectory(int x, int y)  {
     gotoxy(x, y);
     cout << "----------------------------------------------------------------";
     gotoxy(x, y + 1);
@@ -276,6 +276,7 @@ bool InGame::gameMenu(int x, int y)
     return false;
 }
 
+
 bool InGame::difficultyMenu(int x, int y) {
     vector<string> options;
     options.push_back("Difficulty 1");
@@ -291,7 +292,7 @@ bool InGame::difficultyMenu(int x, int y) {
     return false;
 }
 
-bool InGame::saveMenu(int x, int y)
+bool InGame::saveMenu (int x, int y)
 {
     system("cls");
     saveFile(20, 12);
@@ -403,7 +404,7 @@ bool InGame::instructionMenu(int x, int y) {
     return false;
 }
 
-bool InGame::playMenu(int x, int y)
+bool InGame::playMenu (int x, int y)
 {
     vector<string> options;
     options.push_back("Play");
@@ -438,13 +439,13 @@ bool InGame::playMenu(int x, int y)
     }
 }
 
-bool InGame::loadMenu(int x, int y)
+bool InGame::loadMenu (int x, int y)
 {
     system("cls");
     return loadGame(readDirectory(20, 12), hasSound);
 }
 
-bool InGame::settingsMenu(int x, int y)
+bool InGame::settingsMenu (int x, int y)
 {
     vector<string> options;
     options.push_back("Sound on");
@@ -474,9 +475,9 @@ bool InGame::settingsMenu(int x, int y)
             return false;
         }
     }
-}
+} 
 
-int InGame::menu(int x, int y, vector<string>& options, string menu_name) {
+int InGame:: menu(int x, int y, vector<string>& options, string menu_name) {
     HANDLE console_color = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console_color, 15);
     system("cls");
