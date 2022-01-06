@@ -66,7 +66,7 @@ void InGame::loadGame(string filePath, bool music)
     ifstream ifs(filePath, ios::binary);
     if (!ifs.good())
     {
-        CantLoadFile();
+        CantLoadFile(60,20);
     }
     else
     {
@@ -152,7 +152,7 @@ void InGame::saveFile(int x, int y)
         ofstream ofs(dir, ios::binary);
         if (!ofs.good())
         {
-            gotoxy(15, 4);
+            gotoxy(x, y+2);
             cout << "|     file cannot open      |";
         }
         else
@@ -170,7 +170,7 @@ void InGame::saveFile(int x, int y)
             }
         }
         ofs.close();
-        gotoxy(1, 5);
+        gotoxy(x, y+3);
         cout << "re-save file? y/n: ";
         char a;
         cin >> a;
@@ -285,6 +285,14 @@ bool InGame::startMenu(int x, int y)
     options.push_back("Load Game");
     options.push_back("Exit");
     int choice = menu(x, y, options, "START");
+
+    hasSound = 1;
+    maxlevel = 1;
+    level = 1;
+    score = 0;
+    game = nullptr;
+    difficulty = 3;
+
     while (true)
     {
         switch (choice)
