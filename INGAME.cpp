@@ -141,18 +141,22 @@ void InGame::saveFile(int x, int y)
         gotoxy(x, y);
         cout << "-----------------------------------------------------------------------------";
         gotoxy(x, y + 1);
-        cout << "|dir:                                                                        ";
+        cout << "                                 input directory                             ";
         gotoxy(x, y + 2);
         cout << "-----------------------------------------------------------------------------";
+        gotoxy(x, y + 3);
+        cout << "|dir:                                                                        ";
+        gotoxy(x, y + 4);
+        cout << "-----------------------------------------------------------------------------";
 
-        gotoxy(x + 7, y + 1);
+        gotoxy(x + 7, y + 3);
         string dir;
         cin >> dir;
 
         ofstream ofs(dir, ios::binary);
         if (!ofs.good())
         {
-            gotoxy(x, y+2);
+            gotoxy(x, y + 4);
             cout << "|     file cannot open      |";
         }
         else
@@ -170,7 +174,7 @@ void InGame::saveFile(int x, int y)
             }
         }
         ofs.close();
-        gotoxy(x, y+3);
+        gotoxy(x, y+5);
         cout << "re-save file? y/n: ";
         char a;
         cin >> a;
@@ -207,10 +211,14 @@ string readDirectory(int x, int y) {
     gotoxy(x, y);
     cout << "----------------------------------------------------------------";
     gotoxy(x, y + 1);
-    cout << "|dir: ";
+    cout << "                        input directory                         ";
     gotoxy(x, y + 2);
     cout << "----------------------------------------------------------------";
-    gotoxy(x + 7, y + 1);
+    gotoxy(x, y + 3);
+    cout << "|dir: ";
+    gotoxy(x, y + 4);
+    cout << "----------------------------------------------------------------";
+    gotoxy(x + 7, y + 3);
     string n;
     cin >> n;
     return n;
