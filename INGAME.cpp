@@ -245,6 +245,7 @@ bool InGame::gameMenu(int x, int y)
 
 bool InGame::saveMenu(int x, int y)
 {
+    system("cls");
     saveFile(x, y);
     return false;
 }
@@ -359,6 +360,7 @@ bool InGame::playMenu(int x, int y)
 
 bool InGame::loadMenu(int x, int y)
 {
+    system("cls");
     loadGame(readDirectory(60, 12), hasSound);
     playMenu(x, y);
     return false;
